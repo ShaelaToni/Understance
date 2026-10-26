@@ -5,22 +5,27 @@
 
 ## Current position
 - **Phase:** 0 (setup), following HACKATHON_PHASE0_START_KIT.md (kept out of git).
-- **Step:** 0.4 (CLAUDE.md and docs/) committed and pushed; awaiting Shaela's go before 0.5.
-- **Next:** 0.5 folder skeleton, using the names in docs/CONVENTIONS.md.
+- **Step:** 0.5 (folder skeleton) committed and pushed; awaiting Shaela's go before 0.6.
+- **Next:** 0.6 pre-commit hook, plus 0A (confirm locked decisions) and the Claude Code attribution setting, both assigned to 0.6.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
 - 0.1 git init: done. Branch `main`.
 - 0.2 hygiene baseline: done. `.gitignore`, `.env.example` (placeholders only), `README.md` skeleton.
 - 0.3 first commit and remote: done. Commit `71f9131` "Initialize repo and hygiene baseline" (3 files, no attribution trailer), pushed to `origin/main`; verified against GitHub with `git ls-remote` (remote `main` = `71f9131`).
+- 0.4 CLAUDE.md and docs/: done. Commit `ac26f06`, pushed; `origin/main` = `ac26f06`.
 - No tested code exists yet; no tests have run.
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
 2. ~~Folder skeleton: start kit vs CONVENTIONS.md~~ RESOLVED Oct 26: CONVENTIONS.md is authoritative.
-3. **BUILD_ORDER.md Phase 0 items not in the start kit:** 0B Nightshift + NVIDIA-key setup pending before Phase 3; footprint report/test deferred to Phase 2/3; `evals/` comes with the 0.5 skeleton (CONVENTIONS.md). Still unplaced: 0A (confirm locked decisions) and configuring Claude Code to omit attribution.
+3. **BUILD_ORDER.md Phase 0 items not in the start kit:** 0B Nightshift + NVIDIA-key setup pending before Phase 3; footprint report/test deferred to Phase 2/3; `evals/` comes with the 0.5 skeleton (CONVENTIONS.md). 0A (confirm locked decisions) and configuring Claude Code to omit attribution are assigned to Step 0.6 (Shaela, Oct 26).
 4. **GOVERNANCE.md and THREAT_MODEL.md are starters** drawn from CLAUDE.md; to be expanded from spec 17/19/23/24 and Shostack + STRIDE at the relevant phase.
-5. **GitHub email:** commits link to Shaela's GitHub profile only if `git@shaelabeard.com` is added and verified in GitHub Settings > Emails. Not checked from here.
+5. ~~GitHub email verification~~ RESOLVED Oct 26: Shaela verified `git@shaelabeard.com` on her GitHub account.
+6. ~~No `src/understance/__init__.py`~~ RESOLVED Oct 26 (Shaela): empty `src/understance/__init__.py` added, so `understance` is a regular package.
+7. ~~requirements.txt unpinned~~ RESOLVED Oct 26 (Shaela): installed into `.venv` and pinned to the installed versions, `pytest==9.1.1`, `ruff==0.17.2`.
+8. **Import-path wiring for `understance`** (how tests import it, likely a pytest `pythonpath = src` setting) is deferred to Phase 1, to be set when the first test needs it (Shaela, Oct 26).
+9. **Full dependency locking** for fresh-clone reproducibility is to be revisited at Phase 5, when the runtime deps (FastAPI, the sponsor clients) are in; for now only the two top-level dev tools are pinned. Their transitive deps (iniconfig, packaging, pluggy, pygments) are not pinned (Shaela, Oct 26).
 
 ## Session log (questions asked, answers given, why)
 
@@ -62,3 +67,14 @@
 - Directive (Shaela): replace all 5 em dashes with commas and amend them into the 0.4 commit. Done; amended commit `159493f`, same message, no trailer, 0 em dashes in any tracked file.
 - Directive (Shaela): CONVENTIONS.md is authoritative for the folder layout (supersedes the start kit); 0B Nightshift + NVIDIA-key setup pending before Phase 3; footprint report/test deferred to Phase 2/3.
 - This STATE.md update was folded into the same 0.4 commit (also unpushed) so the push carries a clean tree; then pushed to origin.
+- Pushed: `71f9131..ac26f06 main -> main` from the helper's shell (Keychain credentials, no prompt). `git status` up to date with `origin/main`; `git ls-remote` confirms GitHub's `main` = `ac26f06`.
+
+**0.5 folder skeleton**
+- Directive (Shaela): skeleton only, no code. `src/understance/` with `domain/`, `ports/`, `usecases/`, `adapters/`, `orchestration/`, each with an empty `__init__.py`; top-level `tests/`, `sample_app/`, `evals/`, `input_examples/`, `output_examples/`, each with a `.gitkeep`; `logs/` not tracked (gitignored, created at runtime); `requirements.txt` with only `pytest` and `ruff` (FastAPI and sponsor SDKs come at their phases); a virtualenv at `.venv`.
+- Observation: this Mac has no `python` command, only `python3` (Python 3.14.7, /Library/Frameworks). The venv was created with `python3 -m venv .venv`; its Python is 3.14.7. Nothing installed into it yet.
+- Checks: `.venv` ignored (`.gitignore` line 9), `logs/` ignored (line 12).
+- Directive (Shaela): GitHub email verification resolved (she verified `git@shaelabeard.com`); 0A and the Claude Code attribution setting assigned to Step 0.6.
+- 0.5 commit `05d1a42` (12 files, no trailer), not pushed.
+- Directive (Shaela): add an empty `src/understance/__init__.py` (regular package, not namespace). Done.
+- Directive (Shaela): install the dev deps and pin them. `.venv/bin/pip install pytest ruff` installed pytest 9.1.1, ruff 0.17.2, plus transitive iniconfig 2.3.1, packaging 26.3, pluggy 1.7.0, pygments 2.21.0. Confirmed with `pytest --version` and `ruff --version`. `requirements.txt` now `pytest==9.1.1` and `ruff==0.17.2`. pip printed a notice that pip 26.2.2 is available (venv has 26.2.1); not upgraded.
+- Directive (Shaela): import-path wiring deferred to Phase 1; full dependency locking revisited at Phase 5. Amended into the 0.5 commit with the same message, then pushed.
