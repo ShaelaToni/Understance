@@ -1,6 +1,6 @@
 # BUILD ORDER CHECKLIST - follow in order, skip nothing
 **Owner:** Shaela Beard · Team: Wisdom by Design (solo) · Open Agent Hackathon 2026
-**This is the authoritative build order.** Build strictly top to bottom. Do NOT skip, reorder, or add steps of your own accord. Gate each phase before the next. Halt on unexpected output and surface it. The agent roles and their regulations are in the build spec, section 17; the governance enforcement is in section 19; the locked decisions are in section 18. Requirements to check off are in docs/REQUIREMENTS.md.
+**This is the authoritative build order.** Build strictly top to bottom. Do NOT skip, reorder, or add steps of your own accord. Gate each phase before the next. Halt on unexpected output and surface it. The agent roles and their regulations are in the build spec, section 17; the governance enforcement is in section 19; the locked decisions are in docs/DECISIONS.md. Requirements to check off are in docs/REQUIREMENTS.md.
 **Deadline:** submissions close 27 October 2026, 23:45 UTC (hard). Build window opened 22 October.
 **Voice/integrity:** no em dashes, no "trying," no "AI-powered." Under-claim. Never fabricate; name what cannot be seen or reached.
 **Last updated:** Oct 24, 2026 (05:00 CST).
@@ -47,7 +47,7 @@ Woven at EVERY step: write the failing test first; pass the five-part done-gate;
 Deepening (Phase 4) only after the floor is green and if time remains.
 
 ## PHASE 0 - PRE-FLIGHT (first 30-45 min)
-- [ ] 0A. Confirm the locked decisions (spec section 18).
+- [x] 0A. Confirm the locked decisions (docs/DECISIONS.md).
 - [ ] 0B. Start sponsor setup IN PARALLEL now (downloads and accounts take time; prerequisite to Phase 3; do not block coding on these):
   - [ ] Confirm the solo HackOS team "Wisdom by Design."
   - [ ] Register Zetaris Cloud; start the local Docker instance or the AWS instance.

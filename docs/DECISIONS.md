@@ -247,7 +247,7 @@ The five or six strongest "thinking" forks, each one a chosen path plus the road
 2. Read-only, no change capability: safe because it cannot act, not because it promises to.
 3. The model is called only in the Explainer: verification stays deterministic, the model only narrates.
 4. Hosted Nightshift/Nemotron over a local model, with the Explainer behind an adapter so sovereignty is preserved.
-5. Zetaris on AWS over local, to protect the demo machine from a performance wall.
+5. Zetaris local now, AWS as the demo-safety fallback, reversible behind the FactStore port (the agnostic seam in action).
 6. One capability done deeply, not many shallow skills: depth scores, breadth is padding.
 Add or swap as better forks appear. Keep each to the chosen path and one fair line on the alternative.
 

@@ -4,9 +4,9 @@
 **Last updated:** Oct 26, 2026.
 
 ## Current position
-- **Phase:** 0 (setup), following HACKATHON_PHASE0_START_KIT.md (kept out of git).
-- **Step:** 0.5 (folder skeleton) committed and pushed; awaiting Shaela's go before 0.6.
-- **Next:** 0.6 pre-commit hook, plus 0A (confirm locked decisions) and the Claude Code attribution setting, both assigned to 0.6.
+- **Phase:** 0 (setup) COMPLETE (Oct 26), followed HACKATHON_PHASE0_START_KIT.md (kept out of git). 0A confirmed against docs/DECISIONS.md.
+- **Step:** 0.6 done (pre-commit hook, code-health caps, attribution setting); amended into one commit and pushed.
+- **Next:** Phase 1 (pure `domain/`, test-first) per docs/BUILD_ORDER.md, on Shaela's go.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -14,18 +14,28 @@
 - 0.2 hygiene baseline: done. `.gitignore`, `.env.example` (placeholders only), `README.md` skeleton.
 - 0.3 first commit and remote: done. Commit `71f9131` "Initialize repo and hygiene baseline" (3 files, no attribution trailer), pushed to `origin/main`; verified against GitHub with `git ls-remote` (remote `main` = `71f9131`).
 - 0.4 CLAUDE.md and docs/: done. Commit `ac26f06`, pushed; `origin/main` = `ac26f06`.
+- 0.5 folder skeleton: done. Commit `dd0bbe9`, pushed; `origin/main` = `dd0bbe9`.
+- 0.6 pre-commit hook: ruff-check + ruff-format (ruff-pre-commit v0.17.2) installed at `.git/hooks/pre-commit`. Shown to FAIL on a planted violation (unused `import os` blocked with F401, commit exit 1, HEAD unchanged; planted file removed, never committed). Real tree passes both hooks.
+- 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
+- 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`.
+- 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
 - No tested code exists yet; no tests have run.
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
 2. ~~Folder skeleton: start kit vs CONVENTIONS.md~~ RESOLVED Oct 26: CONVENTIONS.md is authoritative.
-3. **BUILD_ORDER.md Phase 0 items not in the start kit:** 0B Nightshift + NVIDIA-key setup pending before Phase 3; footprint report/test deferred to Phase 2/3; `evals/` comes with the 0.5 skeleton (CONVENTIONS.md). 0A (confirm locked decisions) and configuring Claude Code to omit attribution are assigned to Step 0.6 (Shaela, Oct 26).
+3. **BUILD_ORDER.md Phase 0 items not in the start kit:** 0B Nightshift + NVIDIA-key setup pending before Phase 3; footprint report/test deferred to Phase 2/3; `evals/` comes with the 0.5 skeleton (CONVENTIONS.md). The Claude Code attribution setting is done at 0.6. 0A: see thread 10.
 4. **GOVERNANCE.md and THREAT_MODEL.md are starters** drawn from CLAUDE.md; to be expanded from spec 17/19/23/24 and Shostack + STRIDE at the relevant phase.
 5. ~~GitHub email verification~~ RESOLVED Oct 26: Shaela verified `git@shaelabeard.com` on her GitHub account.
 6. ~~No `src/understance/__init__.py`~~ RESOLVED Oct 26 (Shaela): empty `src/understance/__init__.py` added, so `understance` is a regular package.
 7. ~~requirements.txt unpinned~~ RESOLVED Oct 26 (Shaela): installed into `.venv` and pinned to the installed versions, `pytest==9.1.1`, `ruff==0.17.2`.
 8. **Import-path wiring for `understance`** (how tests import it, likely a pytest `pythonpath = src` setting) is deferred to Phase 1, to be set when the first test needs it (Shaela, Oct 26).
-9. **Full dependency locking** for fresh-clone reproducibility is to be revisited at Phase 5, when the runtime deps (FastAPI, the sponsor clients) are in; for now only the two top-level dev tools are pinned. Their transitive deps (iniconfig, packaging, pluggy, pygments) are not pinned (Shaela, Oct 26).
+9. **Full dependency locking** for fresh-clone reproducibility is to be revisited at Phase 5, when the runtime deps (FastAPI, the sponsor clients) are in; for now only the two top-level dev tools are pinned. Their transitive deps (iniconfig, packaging, pluggy, pygments) are not pinned (Shaela, Oct 26). pre-commit (4.7.0) was added and pinned at 0.6; its transitive deps are not pinned either.
+10. ~~0A not ticked~~ RESOLVED Oct 26 (Shaela): docs/DECISIONS.md is the authoritative in-repo record of the locked decisions; the build spec is private and not in the repo. docs/BUILD_ORDER.md header note and the 0A line now point to docs/DECISIONS.md instead of "spec section 18"; 0A ticked.
+11. **Pre-commit hook additions at their phases (Shaela, Oct 26):** the architecture fitness test run joins the hook at 1.3; the governance test run and a dedicated dead-code detector join at 2.6. Not now.
+12. ~~Complexity / function-length cap not active~~ RESOLVED Oct 26 (Shaela): enabled in `ruff.toml` (C901 max 10, PLR0915 default 50 statements), enforced by the hook, recorded in docs/CONVENTIONS.md.
+13. ~~DECISIONS.md FOR-THE-DECK item 5 inconsistent~~ RESOLVED Oct 26 (Shaela): now reads "5. Zetaris local now, AWS as the demo-safety fallback, reversible behind the FactStore port (the agnostic seam in action)."
+14. **BUILD_ORDER.md header still cites the private build spec for sections 17 (agent roles) and 19 (governance enforcement).** Only the section 18 reference was changed, as directed. Those sections are not in the repo either; docs/GOVERNANCE.md is the in-repo starter for both. Pending Shaela.
 
 ## Session log (questions asked, answers given, why)
 
@@ -78,3 +88,15 @@
 - Directive (Shaela): add an empty `src/understance/__init__.py` (regular package, not namespace). Done.
 - Directive (Shaela): install the dev deps and pin them. `.venv/bin/pip install pytest ruff` installed pytest 9.1.1, ruff 0.17.2, plus transitive iniconfig 2.3.1, packaging 26.3, pluggy 1.7.0, pygments 2.21.0. Confirmed with `pytest --version` and `ruff --version`. `requirements.txt` now `pytest==9.1.1` and `ruff==0.17.2`. pip printed a notice that pip 26.2.2 is available (venv has 26.2.1); not upgraded.
 - Directive (Shaela): import-path wiring deferred to Phase 1; full dependency locking revisited at Phase 5. Amended into the 0.5 commit with the same message, then pushed.
+
+**0.6 pre-commit hook, 0A, attribution setting**
+- Directive (Shaela): pre-commit framework with the official ruff hooks only (lint + format), the checks that exist now. Installed pre-commit 4.7.0 into `.venv` and pinned it (`requirements.txt`: `pre-commit==4.7.0`, `pytest==9.1.1`, `ruff==0.17.2`). Checked the hook names at the official repo's `v0.17.2` tag (matches our ruff): `ruff-check` (lint; `ruff` is a legacy alias) and `ruff-format`. `.pre-commit-config.yaml` uses those two; `pre-commit validate-config` passed; `pre-commit install` wrote `.git/hooks/pre-commit`.
+- Proof (planted violation): staged the config, planted `src/understance/_planted_violation.py` containing only `import os`, attempted a commit. Hook output: `ruff check ... Failed`, `F401 os imported but unused`; commit exit 1; HEAD stayed `dd0bbe9`. Unstaged and deleted the planted file; never committed. Then `pre-commit run --all-files`: both hooks Passed on the real tree. (The run printed "Unstaged files detected" because requirements.txt was not yet staged; pre-commit stashed and restored it. Expected, not a failure.)
+- 0A: read docs/DECISIONS.md in full. The build spec (section 18) is not reachable, so 0A was NOT ticked; see open thread 10.
+- Directive (Shaela): configure Claude Code to omit attribution. Created `.claude/settings.json` (repo-scoped, committed, visible) with `"attribution": {"commit": "", "pr": "", "sessionUrl": false}`. The deprecated `includeCoAuthoredBy` key was not used. JSON validated with `jq`.
+- Directive (Shaela): architecture/governance test runs and a dedicated dead-code detector join the hook at 1.3 / 2.6, not now.
+- Directive (Shaela): close 0A with docs/DECISIONS.md as the authoritative in-repo record (build spec is private). BUILD_ORDER.md header note and 0A line changed from "spec section 18" to "docs/DECISIONS.md"; 0A ticked.
+- Directive (Shaela): add `ruff.toml` (not pyproject) enabling C901 (max-complexity 10) and PLR0915 (ruff default, confirmed via `ruff check --show-settings`: `max_statements = 50`). Recorded in docs/CONVENTIONS.md under "Code health." Proof: planted one function with 27 branches and 53 statements; the hook blocked it with C901 (27 > 10) and PLR0915 (53 > 50); HEAD unchanged; planted file removed, never committed; real tree passes.
+- Directive (Shaela): DECISIONS.md FOR-THE-DECK item 5 replaced with her exact wording.
+- Helper observation: BUILD_ORDER.md header still points to the private spec for sections 17 and 19 (open thread 14).
+- Directive (Shaela): amend the 0.6 commit with the message "Complete Phase 0: pre-commit hook, code-health caps, no-attribution setting, 0A confirmed," then push.

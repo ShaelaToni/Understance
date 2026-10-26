@@ -49,6 +49,12 @@ docs/
 ```
 Dependency management: pip + venv + `requirements.txt`. Web framework: FastAPI.
 
+## Code health (enforced by the pre-commit hook; config in `ruff.toml`)
+- Linter and formatter: ruff (`ruff-check`, `ruff-format`), ruff's default rules plus the caps below. Default rules include unused-import (F401).
+- Complexity cap: mccabe C901, `max-complexity = 10` per function.
+- Function-length cap: PLR0915 (too-many-statements), ruff default `max-statements = 50` per function. This counts statements, not lines.
+- Each cap was shown to block a planted violation (Oct 26, Step 0.6). Architecture and governance test runs join the hook at 1.3 and 2.6, a dedicated dead-code detector at 2.6.
+
 ## Pending (not yet decided; STOP and ask before inventing)
 - **Evidence / fact id format** - must be stable and deterministic; the exact scheme is set at the FactStore schema step (Phase 3.1). Until then, do not invent an id format.
 - Any name not listed above.
