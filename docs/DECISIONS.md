@@ -279,6 +279,7 @@ Layer: 1.2 ports
 Gate: tests/test_ports.py (8 tests, red first, green)
 Date: Oct 26. Actor: Shaela (approved).
 Note: earlier dated entries in this file use 'Explainer' for this port; they are left as written per the do-not-rewrite-history rule, and this entry is the authority for the name going forward.
+Understanding gate closed Oct 26: Shaela restated the gateway concept and all four ports correctly in her own words (per the five-part done gate). The rename's primary reason remains the port/agent name collision; a narrator-tells-the-story framing is a secondary note.
 
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
