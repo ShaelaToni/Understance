@@ -24,6 +24,7 @@ Only then check the box in docs/BUILD_ORDER.md and move to the next unchecked it
 - CURRENT-STATE ONLY (the hard-won rule): every verdict is based on the LIVE artifact read right now, the actual file as it is and the test output just run. NEVER approve from memory, a handoff, STATE.md, or an earlier point in the session. "Empirical before hypothesis." If the position changed since the last check (a new commit, an edited file), the prior OK is VOID; re-review against the current state.
 - NO RUBBER STAMP: a verdict must name what was checked, cite the current evidence, surface real concerns (and the Rival's), and resolve each to 100/100. "Looks good" with no named concern and no cited current evidence is NOT a valid review; it means the panel was not run, and that is a not-done.
 - A green panel does not replace the five-part done-gate. Both must pass, both against current reality.
+- The panel runs automatically on every turn that carries a decision, an instruction, a gate verdict, or a halt, before it is presented, with its result shown inline. A bare "panel agrees" with no named concern and no cited current evidence is a not-done.
 
 ## Deciding and recording (so Shaela keeps momentum; she decides, the helper documents)
 When a real decision/fork arises (a choice with a genuine alternative or a consequence; trivial choices already settled by docs/CONVENTIONS.md do not count):
@@ -36,9 +37,9 @@ If Shaela is away: do NOT self-decide a real fork. Record it as "pending Shaela,
 RECONCILE BEFORE RECORDING (no reworded duplicates): before writing any decision or finding, search the existing docs for the topic and judge by SUBSTANCE, not wording. Same substance = do not duplicate (clarify in place if it helps). Changed substance = a revision: supersede the existing entry in place, dated, with the old marked superseded and kept visible; never a silent overwrite and never a parallel duplicate elsewhere. Genuinely new (no existing entry) = add. One topic, one home.
 
 ## Clean architecture (non-negotiable)
-- Dependencies point inward only. domain/ and usecases/ import NOTHING from adapters/ or any third-party package. The test in tests/test_architecture.py enforces this; it must stay green.
+- Dependencies point inward only. domain/, usecases/, and ports/ import NOTHING from adapters/ or any third-party package. The test in tests/test_architecture.py enforces this; it must stay green.
 - Fitness functions are continuous: the architecture, governance, and operational tests run on every commit (pre-commit hook) and at every gate, not once. Each must be shown to fail on a planted violation.
-- Only four ports: SourceReader, FactStore, Explainer, MemoryStore. Existing libraries (ast, graph libs, coverage, pytest) live inside adapters only.
+- Only four ports: SourceReader, FactStore, Narrator, MemoryStore. Existing libraries (ast, graph libs, coverage, pytest) live inside adapters only.
 - Code-health fitness functions run in the pre-commit hook alongside the architecture and governance tests: a linter and formatter (ruff + ruff-format), a complexity/function-length cap, an unused-import check, and a dead-code detector. TDD (write only enough code to pass) is the primary anti-bloat lever; these make "no AI code smell" measurable. A too-long function or an unused import fails the commit.
 - Footprint is proven, not claimed: a governance test asserts the SUBJECT repo is byte-for-byte unchanged after any run (before/after checksum; 0 files created, modified, or deleted). Each run emits a footprint report (wall-clock seconds, peak memory, model calls, tokens if reported, Zetaris queries, files indexed, state bytes written). Cold index time is measured against repo size.
 - Every sponsor call goes through an adapter, never a vendor SDK called from a use case or agent.

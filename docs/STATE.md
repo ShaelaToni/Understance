@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 1 (domain + ports + fitness function). Phase 0 COMPLETE (Oct 26).
-- **Step:** Phase 1.1 done (both passes, understanding gate closed); next: Phase 1.2, the four ports.
-- **Next:** Phase 1.2, the four ports; apply the approved Narrator rename (recorded in DECISIONS) across CONVENTIONS, CLAUDE.md, and GOVERNANCE atomically.
+- **Step:** Phase 1.2 code and Narrator rename done; own-words gate open, 1.2 box unchecked
+- **Next:** Phase 1.3: the architecture fitness test covering domain/, usecases/, and ports/, shown to fail on a planted violation.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -123,3 +123,6 @@
 - Lesson: stage new files before `pre-commit run --all-files`, or the hook does not see them.
 - Names added to docs/CONVENTIONS.md: `FindingKind`, `finding.py`, `tests/test_finding.py`. The ports line is unchanged until 1.2.
 - Understanding gate (part 4) for 1.1 closed: Shaela restated both passes. Before recording, the panel flagged that the pass 1 wording ("imports others while nothing imports it") was narrower than the code; Shaela approved the code-accurate definition (nothing else imports it, whether or not it imports anything itself). Recorded in docs/DECISIONS.md; 1.1 ticked in docs/BUILD_ORDER.md.
+
+### Oct 26, Phase 1.2 (the four ports, Narrator rename)
+- RED: `tests/test_ports.py` (8 tests, supplied by Shaela): `ModuleNotFoundError: No module named 'understance.ports.interfaces'`. GREEN: `src/understance/ports/interfaces.py` (supplied; imports `abc`, `pathlib`, and the domain only): 8 passed; ruff changed nothing; full suite 27 passed. HALT before the docs: "Explainer" as the port also appeared in CLAUDE.md:41, BUILD_ORDER 1.2 and 2.5 (TemplateExplainer), and older DECISIONS entries. Shaela: rename those to Narrator/TemplateNarrator now; leave older dated DECISIONS entries as written (note added to the 1.2 entry); update FOR THE DECK item 4; GOVERNANCE's only "Explainer" is the agent, unchanged. CLAUDE.md gains ports/ in the dependency rule and the automatic-panel bullet. 1.2 box stays unchecked until Shaela's own-words restatement.

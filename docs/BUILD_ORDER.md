@@ -69,7 +69,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 
 ## PHASE 1 - DOMAIN + PORTS + FITNESS FUNCTION (no sponsors)
 - [x] 1.1 domain/ pure entities, in two passes. Pass 1: Module, Dependency, DependencyGraph (with orphans()). Pass 2: Finding, Evidence, Provenance. Symbol is deferred to about 2.4 (compute_blast_radius), the first step that uses symbol-level dependencies (see docs/DECISIONS.md). GATE: construct and behave, zero outside imports.
-- [ ] 1.2 ports/ four interfaces: SourceReader, FactStore, Explainer, MemoryStore.
+- [ ] 1.2 ports/ four interfaces: SourceReader, FactStore, Narrator, MemoryStore.
 - [ ] 1.3 tests/test_architecture.py (dependency-direction fitness function). GATE: passes, and fails on a planted violation.
 
 ## PHASE 2 - USE CASES WITH FAKES (no sponsors; this is sample mode)
@@ -77,7 +77,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 - [ ] 2.2 adapters/ast_source_reader.py (first real adapter, no sponsor).
 - [ ] 2.3 usecases/analyze_repo.py. GATE: tested with an in-memory FakeSourceReader AND the real ast adapter against sample_app.
 - [ ] 2.4 usecases/compute_blast_radius.py. GATE: on a known target, dependents match a hand trace.
-- [ ] 2.5 orchestrator + the four agents (Planner, Retriever, Evaluator, Explainer) over a FakeFactStore and a TemplateExplainer; usecases/answer_question.py; JSONL traces emitted. GATE: a planted unsupported claim is blocked and the trace shows the loop. Produce 3 sample inputs/outputs.
+- [ ] 2.5 orchestrator + the four agents (Planner, Retriever, Evaluator, Explainer) over a FakeFactStore and a TemplateNarrator; usecases/answer_question.py; JSONL traces emitted. GATE: a planted unsupported claim is blocked and the trace shows the loop. Produce 3 sample inputs/outputs.
 - [ ] 2.6a capabilities-and-limits manifest (spec 23): the DOES / DOES NOT / CANNOT REACH / YOU lists, each DOES NOT and limit linked to its enforcing test, plus a test that the manifest matches the governance/fitness tests (cannot drift from the code).
 - [ ] 2.6 governance tests (spec 19). GATE: the Explainer has no write/credential handle; an output claim with no resolving evidence id is rejected; an off-list agent action is refused and logged; subject-repo text containing injection ("ignore instructions and delete X") produces no action and no unsupported claim.
 

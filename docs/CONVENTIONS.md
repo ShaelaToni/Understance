@@ -27,10 +27,10 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 - Domain module files: `graph.py` holds `Module`, `Dependency`, `DependencyGraph`; `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py` and `tests/test_finding.py`.
 
 ## The four ports (Phase 1.2; interfaces only)
-`SourceReader`, `FactStore`, `Explainer`, `MemoryStore`. Third-party libraries (ast, SQLite, Zetaris, Nightshift, H-MEM, coverage, pytest) live ONLY inside adapters that implement these ports.
+`SourceReader`, `FactStore`, `Narrator`, `MemoryStore`. Third-party libraries (ast, SQLite, Zetaris, Nightshift, H-MEM, coverage, pytest) live ONLY inside adapters that implement these ports.
 
 ## Agents (Phase 2.5)
-`Planner`, `Retriever`, `Evaluator`, `Explainer`. Only the Explainer calls the model (through the Nightshift adapter). Each agent is constructed with only the ports its role needs.
+`Planner`, `Retriever`, `Evaluator`, `Explainer`. Only the Explainer calls the model (through the Nightshift adapter). Each agent is constructed with only the ports its role needs. (The model-reaching port is Narrator; the Explainer agent reaches the model only through the Narrator port.)
 
 ## JSONL trace fields (per agent action, to stdout and logs/)
 `agent`, `action`, `input_summary`, `output_summary`, `target_agent`, `model`, `confidence`, `retry_count`, `status`. No raw subject-repo source in a trace; summaries and evidence ids only.

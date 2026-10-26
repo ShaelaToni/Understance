@@ -272,12 +272,20 @@ Record: Shaela restated both passes in her own words; pass 2 was correct as give
 Effect: Phase 1.1 is done on all five gate parts; the 1.1 box in BUILD_ORDER.md is checked. Next: Phase 1.2 (the four ports, with the approved Narrator rename applied across CONVENTIONS, CLAUDE.md, GOVERNANCE atomically).
 Date: Oct 26. Actor: Shaela (restated); recorded per the two-homes relay rule.
 
+## Phase 1.2: the four ports (ABCs), Narrator rename applied
+Decision: SourceReader, FactStore, Narrator, and MemoryStore are declared as ABCs with @abstractmethod in src/understance/ports/interfaces.py (stdlib + domain imports only). SourceReader.read_graph returns DependencyGraph; FactStore has store_graph/load_graph; Narrator.narrate takes findings and returns prose (the only port reaching the model); MemoryStore has save_finding/load_findings (the repo-state stamp is added at Phase 4 when StateStamp exists). The Explainer-to-Narrator port rename is applied here across CONVENTIONS, CLAUDE.md, and BUILD_ORDER (GOVERNANCE needed none; its only Explainer is the agent), atomically with the port's creation.
+Why: declare the architectural seams now, with real methods only where the types exist, so no empty ABC and no invented signatures. Gate: a complete fake of each port instantiates; one missing a method raises TypeError at instantiation.
+Layer: 1.2 ports
+Gate: tests/test_ports.py (8 tests, red first, green)
+Date: Oct 26. Actor: Shaela (approved).
+Note: earlier dated entries in this file use 'Explainer' for this port; they are left as written per the do-not-rewrite-history rule, and this entry is the authority for the name going forward.
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."
 2. Read-only, no change capability: safe because it cannot act, not because it promises to.
 3. The model is called only in the Explainer: verification stays deterministic, the model only narrates.
-4. Hosted Nightshift/Nemotron over a local model, with the Explainer behind an adapter so sovereignty is preserved.
+4. Hosted Nightshift/Nemotron over a local model, with the Narrator port behind an adapter so sovereignty is preserved.
 5. Zetaris local now, AWS as the demo-safety fallback, reversible behind the FactStore port (the agnostic seam in action).
 6. One capability done deeply, not many shallow skills: depth scores, breadth is padding.
 Add or swap as better forks appear. Keep each to the chosen path and one fair line on the alternative.
