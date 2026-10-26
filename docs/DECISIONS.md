@@ -205,6 +205,12 @@ These were decided across the planning session and not yet recorded. Pending ite
 ### Process (added Oct 24)
 **Reconcile before recording** (no reworded duplicates). Why this: "new" information is often a reworded revision; duplicates cause drift and contradiction. Rule: search first, judge by substance; same = clarify in place, revision = supersede in place (dated, old marked superseded, kept visible), new = add; one topic, one home. [Oct 24 · locked]
 
+**Decision-record homes: two for now (the project decision map + repo docs/DECISIONS.md), with a relay rule** (no drift while planning is still live).
+- Why this: planning decisions are still being settled in the orchestration window, so the project decision map stays live there, while the repo docs/DECISIONS.md is the build's record.
+- Relay rule: a decision settled in the orchestration window is recorded in the project map and relayed to CeeCee to add to docs/DECISIONS.md; a decision made during the build goes into docs/DECISIONS.md and is mirrored back to the project map.
+- Why not one home now: one topic, one home is the standing rule (entry above), but collapsing early would cut the live planning window off from its own record; the relay is the deliberate, temporary exception that keeps both in step.
+- Revisit if: planning winds down; then collapse to the repo as the single source. [Oct 26 · decided by Shaela]
+
 ## OPEN QUESTIONS, gating the move to build (answer these to start Phase 0; this Q&A is part of the gate)
 Architecture: (1) SETTLED Oct 25, FactStore schema (see Settled section below and spec 22); (2) SETTLED Oct 25, Planner deterministic decomposition (see Settled section); (3) the Evaluator's exact "claim resolves to a fact" test; (4) what H-MEM holds vs the SQLite Zetaris reads.
 Sponsor: (5) which Nemotron model (name) for the Explainer. [Known unknowns resolved at first contact: Zetaris SQLite ingest; H-MEM API.]
