@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 1 (domain + ports + fitness function). Phase 0 COMPLETE (Oct 26).
-- **Step:** 1.1 pass 1, code green and reviewed, committed; understanding-gate (part 4) PENDING Shaela; do not advance to 1.2 until closed. The 1.1 checkbox in docs/BUILD_ORDER.md stays unchecked (pass 2 also remains).
-- **Next:** close the understanding gate for 1.1 pass 1 (Shaela explains it in her own words); then 1.1 pass 2 (Finding, Evidence, Provenance).
+- **Step:** Phase 1.1 pass 2 done (code and tests; pass-2 own-words gate still open, 1.1 box stays unchecked)
+- **Next:** Phase 1.2: the four ports; apply the approved Narrator rename (recorded in DECISIONS) across CONVENTIONS, CLAUDE.md, and GOVERNANCE atomically.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -113,3 +113,12 @@
 - Directive (Shaela): commit 1.1 pass 1 but do NOT mark 1.1 done or advance to 1.2 (understanding gate open). BUILD_ORDER 1.1 rewritten to two passes (pass 1 Module/Dependency/DependencyGraph; pass 2 Finding/Evidence/Provenance; Symbol deferred to about 2.4, compute_blast_radius); checkbox left unchecked. File names approved and recorded in docs/CONVENTIONS.md ("Source and test files": cluster per file, test mirrors module). `tests/.gitkeep` deleted. The Symbol-deferral entry in docs/DECISIONS.md updated in place (target about 2.4; BUILD_ORDER amended).
 - NOT DONE, pending Shaela: a "two-homes-with-relay" DECISIONS entry was requested, but nothing in this session or the repo describes it (searched all .md files for "relay" and "two homes": no hits). Not written, to avoid inventing it. Needs Shaela's content.
 - RESOLVED: Shaela supplied the "two homes with a relay rule" decision (project decision map + repo docs/DECISIONS.md; orchestration-window decisions relayed to CeeCee for the repo, build decisions mirrored back; collapse to the repo when planning winds down). Recorded in docs/DECISIONS.md under Process, after "Reconcile before recording."
+
+### Oct 26, Phase 1.1 pass 2 (Finding, Evidence, Provenance)
+- Phase 1.2 design proposal brought first (no code). The Rival flagged the Explainer port/agent name collision. Shaela directed pass 2 before 1.2 and approved the rename: the port is Narrator, the agent stays Explainer (recorded in docs/DECISIONS.md; applied at 1.2).
+- RED: `tests/test_finding.py` (10 tests, content supplied by Shaela). Run: `ModuleNotFoundError: No module named 'understance.domain.finding'`.
+- GREEN: `src/understance/domain/finding.py` (content supplied by Shaela; imports only `dataclasses` and `enum`). Run: 10 passed.
+- Mutation check: removing the empty-evidence check fails only `test_finding_rejects_empty_evidence`; dropping the `tuple()` normalization fails only `test_finding_normalizes_evidence_to_a_tuple`. Restored byte-identical; 10 passed.
+- HALT: `pre-commit run --all-files` skips untracked files, so its "Passed" did not cover the new files. Direct ruff showed the test file failing I001 (import order) and ruff-format (four lines over 88). Shaela: her draft's mistake; apply `ruff check --fix` and `ruff format`, diff limited to the import reorder and line wraps (confirmed), then stage before running the hook. Hook passed on the staged files; full suite 19 passed.
+- Lesson: stage new files before `pre-commit run --all-files`, or the hook does not see them.
+- Names added to docs/CONVENTIONS.md: `FindingKind`, `finding.py`, `tests/test_finding.py`. The ports line is unchanged until 1.2.

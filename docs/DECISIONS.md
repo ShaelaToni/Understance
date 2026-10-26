@@ -253,6 +253,18 @@ Supplement the 95-member roster for this build only.
 - Adam Shostack (threat modeling): docs/THREAT_MODEL.md uses a structured method (his 4 questions + STRIDE), not ad hoc. [Oct 25 · added, sharpens threat model]
 - Daniele Procida / Diátaxis (technical docs, optional): the report and README separate explanation / how-to / reference. [Oct 25 · offered]
 
+## Phase 1.1 pass 2: Finding, Evidence, Provenance (pure domain, ids deferred)
+Decision: Finding is a conclusion flagged observed vs inferred (FindingKind enum) that must carry at least one Evidence, enforced at construction (no claim without a fact). Evidence is a pointer: file, optional line_start/line_end, optional content_hash. Provenance records entity/activity/agent. All frozen dataclasses, stdlib only.
+Why: pass 2 of the pure domain, needed before the Narrator and MemoryStore ports. No id fields yet; the evidence/fact id format is set at the FactStore schema (Phase 3.1) and must not be invented early, so Finding references Evidence by object for now (adding an id later is additive and does not reshape these types).
+Layer: 1.1 domain (pass 2)
+Gate: tests/test_finding.py, 10 tests, written red first, green, mutation-checked on the non-empty-evidence and tuple-normalization rules.
+
+## Port rename: the model-reaching port is Narrator (the agent stays Explainer)
+Decision: the Phase 1.2 port that reaches the model is named Narrator; the agent that composes the explanation keeps the name Explainer.
+Why: CONVENTIONS named both a port and an agent "Explainer," which collides in imports and in meaning. The agent name is user-facing (the JSONL agent field and the Track 2 headline), so it keeps Explainer; the port becomes Narrator (the seam that narrates findings into prose, technology-neutral, and a non-model fake narrator fits SAMPLE_MODE).
+Scope: this entry RECORDS the decision only. The CONVENTIONS ports line, CLAUDE.md's dependency-rule scope, and any "Explainer" in GOVERNANCE that meant the port are all updated together at Phase 1.2, when the port is created, so the rename lands atomically. Do not edit those three files in this change.
+Decided: Oct 26, approved by Shaela. Actor: Shaela.
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

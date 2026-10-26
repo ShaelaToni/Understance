@@ -18,11 +18,13 @@
 - **BlastRadius** - the set of things a change to a given target could affect (reverse dependencies and the forward set), with evidence per edge.
 
 ## Domain entities (Phase 1.1; pure, no outside imports)
-`Module`, `Symbol`, `Dependency`, `DependencyGraph` (exposes `orphans()`), `Finding`, `Evidence`, `Provenance`.
+`Module`, `Symbol`, `Dependency`, `DependencyGraph` (exposes `orphans()`), `Finding`, `FindingKind`, `Evidence`, `Provenance`.
+A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFERRED`) and references its `Evidence` by object (no id fields until Phase 3.1).
 
 ## Source and test files
 - Cluster per file: entities that belong together live in one module file. `src/understance/domain/graph.py` holds `Module`, `Dependency`, `DependencyGraph`. Symbol arrives at about 2.4.
 - Test mirrors module: each source file has one matching test file in `tests/`. `graph.py` is covered by `tests/test_dependency_graph.py` (named for its cluster).
+- Domain module files: `graph.py` holds `Module`, `Dependency`, `DependencyGraph`; `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py` and `tests/test_finding.py`.
 
 ## The four ports (Phase 1.2; interfaces only)
 `SourceReader`, `FactStore`, `Explainer`, `MemoryStore`. Third-party libraries (ast, SQLite, Zetaris, Nightshift, H-MEM, coverage, pytest) live ONLY inside adapters that implement these ports.
