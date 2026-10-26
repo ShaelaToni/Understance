@@ -281,6 +281,9 @@ Date: Oct 26. Actor: Shaela (approved).
 Note: earlier dated entries in this file use 'Explainer' for this port; they are left as written per the do-not-rewrite-history rule, and this entry is the authority for the name going forward.
 Understanding gate closed Oct 26: Shaela restated the gateway concept and all four ports correctly in her own words (per the five-part done gate). The rename's primary reason remains the port/agent name collision; a narrator-tells-the-story framing is a secondary note.
 
+## Sprint speed change (Oct 26, 5pm EST): understanding gate becomes a non-blocking snippet
+Part 4 of the five-part done gate is amended for the sprint: a short plain-language snippet of what each step did is recorded (for the demo and the record); Shaela's own-words restatement is no longer required to advance. The other four gate parts are unchanged, and fitness tests are still shown to fail on a planted violation. Reason: recover speed the day before the deadline without touching code quality. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

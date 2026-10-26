@@ -15,7 +15,7 @@ Do NOT advance to the next step until ALL five are true. A green test alone is n
 1. The step's tests are green, actually run and shown, not claimed. Fitness/governance tests must also be shown to fail on a planted violation.
 2. The output matches the result defined beforehand (for deterministic layers, the hand-verified truth of sample_app). Review at 100/100; concerns resolved, not deferred.
 3. No unexpected output occurred. A surprise is a not-done: halt and investigate first.
-4. Shaela can explain, in her own words, what the step did. If she cannot, it is not done.
+4. A short plain-language snippet of what the step did is recorded for the demo and the record. During the sprint, Shaela's own-words restatement is not required to advance; she may still restate any step she wishes.
 5. Committed with the what/why/Layer/Gate message, and docs/STATE.md updated (step marked done, next step named).
 Only then check the box in docs/BUILD_ORDER.md and move to the next unchecked item. Never declare done or advance on your own judgment; these five are the signal.
 
