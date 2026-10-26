@@ -265,6 +265,13 @@ Why: CONVENTIONS named both a port and an agent "Explainer," which collides in i
 Scope: this entry RECORDS the decision only. The CONVENTIONS ports line, CLAUDE.md's dependency-rule scope, and any "Explainer" in GOVERNANCE that meant the port are all updated together at Phase 1.2, when the port is created, so the rename lands atomically. Do not edit those three files in this change.
 Decided: Oct 26, approved by Shaela. Actor: Shaela.
 
+## Phase 1.1 understanding gate closed (both passes); 1.1 done
+Record: Shaela restated both passes in her own words; pass 2 was correct as given, and the pass 1 orphan definition was sharpened to match the code before recording. The code-accurate definitions used to close the gate:
+- Pass 1: an orphan is a module that nothing else imports, whether or not it imports anything itself (includes a legitimate entry point like main, so an orphan is never labeled "unused" or "dead"); graph.py imports only the standard-library dataclasses, so the innermost ring depends on nothing outward.
+- Pass 2: Evidence is a pointer to one exact spot in the code that supports a claim; Provenance is the trail of what produced a fact or decision (entity, activity, agent); a Finding is a conclusion tagged observed or inferred that must carry at least one Evidence, because an evidence-less Finding would break the tool's foundation (no claim without a fact).
+Effect: Phase 1.1 is done on all five gate parts; the 1.1 box in BUILD_ORDER.md is checked. Next: Phase 1.2 (the four ports, with the approved Narrator rename applied across CONVENTIONS, CLAUDE.md, GOVERNANCE atomically).
+Date: Oct 26. Actor: Shaela (restated); recorded per the two-homes relay rule.
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

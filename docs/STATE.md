@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 1 (domain + ports + fitness function). Phase 0 COMPLETE (Oct 26).
-- **Step:** Phase 1.1 pass 2 done (code and tests; pass-2 own-words gate still open, 1.1 box stays unchecked)
-- **Next:** Phase 1.2: the four ports; apply the approved Narrator rename (recorded in DECISIONS) across CONVENTIONS, CLAUDE.md, and GOVERNANCE atomically.
+- **Step:** Phase 1.1 done (both passes, understanding gate closed); next: Phase 1.2, the four ports.
+- **Next:** Phase 1.2, the four ports; apply the approved Narrator rename (recorded in DECISIONS) across CONVENTIONS, CLAUDE.md, and GOVERNANCE atomically.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -122,3 +122,4 @@
 - HALT: `pre-commit run --all-files` skips untracked files, so its "Passed" did not cover the new files. Direct ruff showed the test file failing I001 (import order) and ruff-format (four lines over 88). Shaela: her draft's mistake; apply `ruff check --fix` and `ruff format`, diff limited to the import reorder and line wraps (confirmed), then stage before running the hook. Hook passed on the staged files; full suite 19 passed.
 - Lesson: stage new files before `pre-commit run --all-files`, or the hook does not see them.
 - Names added to docs/CONVENTIONS.md: `FindingKind`, `finding.py`, `tests/test_finding.py`. The ports line is unchanged until 1.2.
+- Understanding gate (part 4) for 1.1 closed: Shaela restated both passes. Before recording, the panel flagged that the pass 1 wording ("imports others while nothing imports it") was narrower than the code; Shaela approved the code-accurate definition (nothing else imports it, whether or not it imports anything itself). Recorded in docs/DECISIONS.md; 1.1 ticked in docs/BUILD_ORDER.md.

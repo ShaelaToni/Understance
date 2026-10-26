@@ -68,7 +68,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
   - [ ] evals/ directory for the 7 golden-set scenarios with hand-authored expected outputs (spec 22).
 
 ## PHASE 1 - DOMAIN + PORTS + FITNESS FUNCTION (no sponsors)
-- [ ] 1.1 domain/ pure entities, in two passes. Pass 1: Module, Dependency, DependencyGraph (with orphans()). Pass 2: Finding, Evidence, Provenance. Symbol is deferred to about 2.4 (compute_blast_radius), the first step that uses symbol-level dependencies (see docs/DECISIONS.md). GATE: construct and behave, zero outside imports.
+- [x] 1.1 domain/ pure entities, in two passes. Pass 1: Module, Dependency, DependencyGraph (with orphans()). Pass 2: Finding, Evidence, Provenance. Symbol is deferred to about 2.4 (compute_blast_radius), the first step that uses symbol-level dependencies (see docs/DECISIONS.md). GATE: construct and behave, zero outside imports.
 - [ ] 1.2 ports/ four interfaces: SourceReader, FactStore, Explainer, MemoryStore.
 - [ ] 1.3 tests/test_architecture.py (dependency-direction fitness function). GATE: passes, and fails on a planted violation.
 
