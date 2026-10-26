@@ -63,6 +63,12 @@ Put it under the fitting heading (Strategic, Architecture, Tooling and Infra, Sc
 - Why not a model in every agent: more "agentic" on the surface, but it spends tokens, adds nondeterminism, weakens verification, and complicates sample mode.
 - Revisit if: a later capability genuinely needs model judgment in the Planner. [Oct 24 · reversible]
 
+**Phase 1.1 pass 1 graph entities: Module, Dependency, DependencyGraph only; immutable; orphan = imported by no other module** (minimal v1, deterministic output, honest wording).
+- Why this: `Module(name)` (dotted name), `Dependency(source, target)` (module names; source imports target), `DependencyGraph(modules, dependencies)` stored as tuples in a frozen dataclass so it cannot change after construction; `orphans()` returns a list sorted by name (stable order). A self-import does not rescue a module from being an orphan; a dependency whose target is not in the graph changes nothing. Symbol is deferred to about 2.4 (compute_blast_radius), the first step that uses symbol-level dependencies (TDD: build only what a test needs). File path and line live with Evidence in pass 2.
+- Why not include Symbol now (as BUILD_ORDER 1.1 lists): it keeps 1.1 literally complete, but no pass-1 test uses it, so it would be untested speculative code. Effect: BUILD_ORDER 1.1 amended Oct 26 (Shaela) to two passes (pass 1 Module/Dependency/DependencyGraph; pass 2 Finding/Evidence/Provenance) with Symbol at about 2.4.
+- Rival: "orphan" includes entry points such as `main`; it means "not imported by any module," never "unused." User-facing wording must say so (settle at the Explainer step).
+- Revisit if: a later step needs symbol-level dependencies or dangling targets reported as findings. [Oct 26 · decided by Shaela; reversible]
+
 ## TOOLING AND INFRA
 **Hosted LLM through Nightshift on Nemotron, not a local open-source model (Ollama)** (eligibility, no GPU, the prize).
 - Why this: Nightshift is the mandatory primary provider, the hosted path needs no local GPU, and Nemotron chases the DGX Spark. Sovereignty is still honored because the Explainer sits behind an adapter and can swap to a local model later.

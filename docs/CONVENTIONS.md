@@ -20,6 +20,10 @@
 ## Domain entities (Phase 1.1; pure, no outside imports)
 `Module`, `Symbol`, `Dependency`, `DependencyGraph` (exposes `orphans()`), `Finding`, `Evidence`, `Provenance`.
 
+## Source and test files
+- Cluster per file: entities that belong together live in one module file. `src/understance/domain/graph.py` holds `Module`, `Dependency`, `DependencyGraph`. Symbol arrives at about 2.4.
+- Test mirrors module: each source file has one matching test file in `tests/`. `graph.py` is covered by `tests/test_dependency_graph.py` (named for its cluster).
+
 ## The four ports (Phase 1.2; interfaces only)
 `SourceReader`, `FactStore`, `Explainer`, `MemoryStore`. Third-party libraries (ast, SQLite, Zetaris, Nightshift, H-MEM, coverage, pytest) live ONLY inside adapters that implement these ports.
 
@@ -48,6 +52,7 @@ logs/                  (runtime JSONL traces; gitignored)
 docs/
 ```
 Dependency management: pip + venv + `requirements.txt`. Web framework: FastAPI.
+Test import path: `pytest.ini` at the repo root sets `pythonpath = src`, so tests import `understance...` directly. No `pyproject.toml` (by choice; tool config lives in `pytest.ini` and `ruff.toml`).
 
 ## Code health (enforced by the pre-commit hook; config in `ruff.toml`)
 - Linter and formatter: ruff (`ruff-check`, `ruff-format`), ruff's default rules plus the caps below. Default rules include unused-import (F401).

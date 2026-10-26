@@ -4,9 +4,9 @@
 **Last updated:** Oct 26, 2026.
 
 ## Current position
-- **Phase:** 0 (setup) COMPLETE (Oct 26), followed HACKATHON_PHASE0_START_KIT.md (kept out of git). 0A confirmed against docs/DECISIONS.md.
-- **Step:** 0.6 done (pre-commit hook, code-health caps, attribution setting); amended into one commit and pushed.
-- **Next:** Phase 1 (pure `domain/`, test-first) per docs/BUILD_ORDER.md, on Shaela's go.
+- **Phase:** 1 (domain + ports + fitness function). Phase 0 COMPLETE (Oct 26).
+- **Step:** 1.1 pass 1, code green and reviewed, committed; understanding-gate (part 4) PENDING Shaela; do not advance to 1.2 until closed. The 1.1 checkbox in docs/BUILD_ORDER.md stays unchecked (pass 2 also remains).
+- **Next:** close the understanding gate for 1.1 pass 1 (Shaela explains it in her own words); then 1.1 pass 2 (Finding, Evidence, Provenance).
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -29,7 +29,7 @@
 5. ~~GitHub email verification~~ RESOLVED Oct 26: Shaela verified `git@shaelabeard.com` on her GitHub account.
 6. ~~No `src/understance/__init__.py`~~ RESOLVED Oct 26 (Shaela): empty `src/understance/__init__.py` added, so `understance` is a regular package.
 7. ~~requirements.txt unpinned~~ RESOLVED Oct 26 (Shaela): installed into `.venv` and pinned to the installed versions, `pytest==9.1.1`, `ruff==0.17.2`.
-8. **Import-path wiring for `understance`** (how tests import it, likely a pytest `pythonpath = src` setting) is deferred to Phase 1, to be set when the first test needs it (Shaela, Oct 26).
+8. ~~Import-path wiring for `understance`~~ RESOLVED Oct 26 (Shaela, Phase 1.1): `pytest.ini` with `pythonpath = src` (no pyproject.toml); recorded in docs/CONVENTIONS.md.
 9. **Full dependency locking** for fresh-clone reproducibility is to be revisited at Phase 5, when the runtime deps (FastAPI, the sponsor clients) are in; for now only the two top-level dev tools are pinned. Their transitive deps (iniconfig, packaging, pluggy, pygments) are not pinned (Shaela, Oct 26). pre-commit (4.7.0) was added and pinned at 0.6; its transitive deps are not pinned either.
 10. ~~0A not ticked~~ RESOLVED Oct 26 (Shaela): docs/DECISIONS.md is the authoritative in-repo record of the locked decisions; the build spec is private and not in the repo. docs/BUILD_ORDER.md header note and the 0A line now point to docs/DECISIONS.md instead of "spec section 18"; 0A ticked.
 11. **Pre-commit hook additions at their phases (Shaela, Oct 26):** the architecture fitness test run joins the hook at 1.3; the governance test run and a dedicated dead-code detector join at 2.6. Not now.
@@ -100,3 +100,15 @@
 - Directive (Shaela): DECISIONS.md FOR-THE-DECK item 5 replaced with her exact wording.
 - Helper observation: BUILD_ORDER.md header still points to the private spec for sections 17 and 19 (open thread 14).
 - Directive (Shaela): amend the 0.6 commit with the message "Complete Phase 0: pre-commit hook, code-health caps, no-attribution setting, 0A confirmed," then push.
+
+### Phase 1.1, pass 1 (graph entities)
+- Directive (Shaela): settle import-path wiring first. Created `pytest.ini` (`[pytest]` / `pythonpath = src`). Verified: pytest reports `configfile: pytest.ini`, collects 0 items (no tests yet), and `understance.domain` imports from `src/`. Recorded in docs/CONVENTIONS.md.
+- Halted at the design review before writing tests: the field names and the meaning of an orphan are not in docs/CONVENTIONS.md, so they were put to Shaela as one short list (CLAUDE.md: do not invent names; surface forks before code).
+- Design approved by Shaela with three refinements: (1) `DependencyGraph.modules` and `.dependencies` stored as tuples (truly immutable), `orphans()` still returns a sorted list; (2) Symbol dropped from pass 1, added at the step that first uses symbol-level dependencies; (3) a failing test for the dangling-target case. Recorded in docs/DECISIONS.md (Architecture). Note: BUILD_ORDER 1.1 lists Symbol, so the 1.1 box waits for Symbol or an amended BUILD_ORDER (pending Shaela).
+- RED: wrote `tests/test_dependency_graph.py` (9 tests) first. Run: `ModuleNotFoundError: No module named 'understance.domain.graph'`, 1 collection error, 0 passed.
+- GREEN: wrote `src/understance/domain/graph.py` (frozen dataclasses `Module`, `Dependency`, `DependencyGraph`; only import is `from dataclasses import dataclass`). Run: 9 passed. ruff check and ruff format pass (formatter wrapped one long test line).
+- Discrimination check (scratchpad copies, real code untouched): removing the self-import rule, the sorting, or the tuple conversion each makes exactly 1 test fail. The dangling-target test passes without special code (an unknown target never matches a module); it guards against a later change that would, for example, add missing targets as modules.
+- File names `src/understance/domain/graph.py` and `tests/test_dependency_graph.py` are not in docs/CONVENTIONS.md; chosen as reversible defaults, pending Shaela.
+- Paused at green for Shaela's gate; not committed.
+- Directive (Shaela): commit 1.1 pass 1 but do NOT mark 1.1 done or advance to 1.2 (understanding gate open). BUILD_ORDER 1.1 rewritten to two passes (pass 1 Module/Dependency/DependencyGraph; pass 2 Finding/Evidence/Provenance; Symbol deferred to about 2.4, compute_blast_radius); checkbox left unchecked. File names approved and recorded in docs/CONVENTIONS.md ("Source and test files": cluster per file, test mirrors module). `tests/.gitkeep` deleted. The Symbol-deferral entry in docs/DECISIONS.md updated in place (target about 2.4; BUILD_ORDER amended).
+- NOT DONE, pending Shaela: a "two-homes-with-relay" DECISIONS entry was requested, but nothing in this session or the repo describes it (searched all .md files for "relay" and "two homes": no hits). Not written, to avoid inventing it. Needs Shaela's content.
