@@ -4,9 +4,9 @@
 **Last updated:** Oct 26, 2026.
 
 ## Current position
-- **Phase:** 1 (domain + ports + fitness function). Phase 0 COMPLETE (Oct 26).
-- **Step:** Phase 2.1 done: sample_app fixture and its hand-verified expected graph
-- **Next:** Phase 2.2: the ast SourceReader adapter.
+- **Phase:** 2 (use cases with fakes). Phases 0 and 1 COMPLETE (Oct 26).
+- **Step:** Phase 2.1 REOPENED: committed fixture (52fe793) does not match BUILD_ORDER line 76 (missing the circular dependency, the in-fixture tests with one untested module, and the access module).
+- **Next:** Corrected 2.1 fixture (design approved by Shaela, instruction to follow). Do NOT start 2.2 until 2.1 matches line 76.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`.
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 19 pass (9 dependency-graph tests in pass 1, `tests/test_dependency_graph.py`; 10 finding tests in pass 2, `tests/test_finding.py`).
+- Tests: 36 pass (9 graph, 10 finding, 8 ports, 5 architecture, 4 sample_app)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -130,3 +130,7 @@
 - Sprint speed change (Shaela, Oct 26): done-gate part 4 in CLAUDE.md amended to a recorded plain-language snippet; own-words restatement no longer blocks advancing. Recorded in docs/DECISIONS.md.
 - 1.3: a test now reads every file in the inner rings and fails if any imports an adapter or an outside library; inner rings use absolute imports only. Wired into pre-commit so the rule is enforced every commit. Shown failing on a planted forbidden import, then passing when removed.
 - 2.1: added sample_app, a tiny subscription-SaaS fixture (seven modules with real import relationships and a deliberately ambiguous cancellation-timing function) plus its hand-verified expected dependency graph (the edges, and that main is the sole orphan). Tests pin the fixture to that truth. It is only ever parsed, never executed.
+
+### Oct 26, Phase 2.1 reopened
+- Found: the 2.1 box was checked before comparing the fixture to BUILD_ORDER line 76. Missing: the circular dependency, the in-fixture tests with one untested module, and the access module (auth instead).
+- Shaela approved reopening 2.1 and correcting the fixture to match line 76 in full. The corrected-fixture instruction follows as a separate commit.

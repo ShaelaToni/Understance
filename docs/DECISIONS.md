@@ -298,6 +298,13 @@ Layer: 2.1 fixture
 Gate: tests/test_sample_app.py (4 tests, red first, green).
 Date: Oct 26. Actor: Shaela (approved).
 
+## Phase 2.1 reopened (Oct 26)
+Decision: 2.1 is reopened and its box unchecked. The committed fixture (52fe793) does not match BUILD_ORDER line 76.
+Why: the box was checked before comparing the result to the predefined spec, so gate part 2 was not met. The pushed commit stays (history is not rewritten); this is a forward fix.
+Layer: 2.1 fixture
+Gate: part 2 (output matches the predefined result) not met; reopened.
+Date: Oct 26. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."
