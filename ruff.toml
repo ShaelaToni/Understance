@@ -1,3 +1,6 @@
+# The subject repo is data we analyze, not our code (see docs/DECISIONS.md, Phase 2.1).
+extend-exclude = ["sample_app"]
+
 [lint]
 # Keep ruff's default rules and add the code-health caps (see docs/CONVENTIONS.md).
 extend-select = ["C901", "PLR0915"]

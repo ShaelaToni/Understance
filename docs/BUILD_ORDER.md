@@ -73,7 +73,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 - [x] 1.3 tests/test_architecture.py (dependency-direction fitness function). GATE: passes, and fails on a planted violation.
 
 ## PHASE 2 - USE CASES WITH FAKES (no sponsors; this is sample mode)
-- [ ] 2.1 sample_app/ small Python repo = a tiny subscription SaaS (subscriptions, billing, access, notifications, api, tests), crafted so it also contains one import chain, one orphan, one untested module, one circular dependency. This repo carries the demo scenario: the request "add customer cancellation" with the unresolved policy "immediate or end of billing period?" that the agent must STOP and ask, not invent.
+- [x] 2.1 sample_app/ small Python repo = a tiny subscription SaaS (subscriptions, billing, access, notifications, api, tests), crafted so it also contains one import chain, one orphan, one untested module, one circular dependency. This repo carries the demo scenario: the request "add customer cancellation" with the unresolved policy "immediate or end of billing period?" that the agent must STOP and ask, not invent.
 - [ ] 2.2 adapters/ast_source_reader.py (first real adapter, no sponsor).
 - [ ] 2.3 usecases/analyze_repo.py. GATE: tested with an in-memory FakeSourceReader AND the real ast adapter against sample_app.
 - [ ] 2.4 usecases/compute_blast_radius.py. GATE: on a known target, dependents match a hand trace.

@@ -291,6 +291,13 @@ Layer: 1.3 architecture fitness
 Gate: tests/test_architecture.py (5 tests), shown to fail on a planted violation (import requests in domain/graph.py), and running in pre-commit.
 Date: Oct 26. Actor: Shaela (approved).
 
+## Phase 2.1: sample_app fixture and hand-verified truth
+Decision: sample_app is a tiny subscription-SaaS subject repo (models, subscriptions, auth, billing, notifications, api, main) with real intra-package imports and a deliberately ambiguous cancel_subscription timing (the demo's stop-and-ask beat). Its expected dependency graph is hand-verified and recorded in tests/sample_app_truth.py (10 edges; main is the sole orphan). Module naming is the dotted path with __init__.py excluded; this is provisional and confirmed at 2.2's reader design.
+Why: the deterministic layers are verified against this hand-verified truth, so it is defined before the reader is built. The fixture is parsed statically only, never imported or run (governance), and is excluded from ruff because the subject is data, not our code.
+Layer: 2.1 fixture
+Gate: tests/test_sample_app.py (4 tests, red first, green).
+Date: Oct 26. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 1 (domain + ports + fitness function). Phase 0 COMPLETE (Oct 26).
-- **Step:** Phase 1.3 done: architecture fitness test enforcing the dependency rule across domain/, ports/, usecases/, wired into pre-commit
-- **Next:** Phase 2.1: the sample_app fixture.
+- **Step:** Phase 2.1 done: sample_app fixture and its hand-verified expected graph
+- **Next:** Phase 2.2: the ast SourceReader adapter.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -32,7 +32,7 @@
 8. ~~Import-path wiring for `understance`~~ RESOLVED Oct 26 (Shaela, Phase 1.1): `pytest.ini` with `pythonpath = src` (no pyproject.toml); recorded in docs/CONVENTIONS.md.
 9. **Full dependency locking** for fresh-clone reproducibility is to be revisited at Phase 5, when the runtime deps (FastAPI, the sponsor clients) are in; for now only the two top-level dev tools are pinned. Their transitive deps (iniconfig, packaging, pluggy, pygments) are not pinned (Shaela, Oct 26). pre-commit (4.7.0) was added and pinned at 0.6; its transitive deps are not pinned either.
 10. ~~0A not ticked~~ RESOLVED Oct 26 (Shaela): docs/DECISIONS.md is the authoritative in-repo record of the locked decisions; the build spec is private and not in the repo. docs/BUILD_ORDER.md header note and the 0A line now point to docs/DECISIONS.md instead of "spec section 18"; 0A ticked.
-11. **Pre-commit hook additions at their phases (Shaela, Oct 26):** the architecture fitness test run joins the hook at 1.3; the governance test run and a dedicated dead-code detector join at 2.6. Not now.
+11. **Pre-commit hook additions at their phases (Shaela, Oct 26):** ~~the architecture fitness test run joins the hook at 1.3~~ RESOLVED: landed in 2a7a6fe. Still open: the governance test run and a dedicated dead-code detector join at 2.6.
 12. ~~Complexity / function-length cap not active~~ RESOLVED Oct 26 (Shaela): enabled in `ruff.toml` (C901 max 10, PLR0915 default 50 statements), enforced by the hook, recorded in docs/CONVENTIONS.md.
 13. ~~DECISIONS.md FOR-THE-DECK item 5 inconsistent~~ RESOLVED Oct 26 (Shaela): now reads "5. Zetaris local now, AWS as the demo-safety fallback, reversible behind the FactStore port (the agnostic seam in action)."
 14. **BUILD_ORDER.md header still cites the private build spec for sections 17 (agent roles) and 19 (governance enforcement).** Only the section 18 reference was changed, as directed. Those sections are not in the repo either; docs/GOVERNANCE.md is the in-repo starter for both. Pending Shaela.
@@ -129,3 +129,4 @@
 - Understanding gate (part 4) for 1.2 closed by Shaela; 1.2 ticked in docs/BUILD_ORDER.md.
 - Sprint speed change (Shaela, Oct 26): done-gate part 4 in CLAUDE.md amended to a recorded plain-language snippet; own-words restatement no longer blocks advancing. Recorded in docs/DECISIONS.md.
 - 1.3: a test now reads every file in the inner rings and fails if any imports an adapter or an outside library; inner rings use absolute imports only. Wired into pre-commit so the rule is enforced every commit. Shown failing on a planted forbidden import, then passing when removed.
+- 2.1: added sample_app, a tiny subscription-SaaS fixture (seven modules with real import relationships and a deliberately ambiguous cancellation-timing function) plus its hand-verified expected dependency graph (the edges, and that main is the sole orphan). Tests pin the fixture to that truth. It is only ever parsed, never executed.
