@@ -5,7 +5,7 @@
 
 ## Current position
 - **Phase:** 1 (domain + ports + fitness function). Phase 0 COMPLETE (Oct 26).
-- **Step:** Phase 1.2 code and Narrator rename done; own-words gate open, 1.2 box unchecked
+- **Step:** Phase 1.2 done (understanding gate closed)
 - **Next:** Phase 1.3: the architecture fitness test covering domain/, usecases/, and ports/, shown to fail on a planted violation.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
@@ -126,3 +126,4 @@
 
 ### Oct 26, Phase 1.2 (the four ports, Narrator rename)
 - RED: `tests/test_ports.py` (8 tests, supplied by Shaela): `ModuleNotFoundError: No module named 'understance.ports.interfaces'`. GREEN: `src/understance/ports/interfaces.py` (supplied; imports `abc`, `pathlib`, and the domain only): 8 passed; ruff changed nothing; full suite 27 passed. HALT before the docs: "Explainer" as the port also appeared in CLAUDE.md:41, BUILD_ORDER 1.2 and 2.5 (TemplateExplainer), and older DECISIONS entries. Shaela: rename those to Narrator/TemplateNarrator now; leave older dated DECISIONS entries as written (note added to the 1.2 entry); update FOR THE DECK item 4; GOVERNANCE's only "Explainer" is the agent, unchanged. CLAUDE.md gains ports/ in the dependency rule and the automatic-panel bullet. 1.2 box stays unchecked until Shaela's own-words restatement.
+- Understanding gate (part 4) for 1.2 closed by Shaela; 1.2 ticked in docs/BUILD_ORDER.md.
