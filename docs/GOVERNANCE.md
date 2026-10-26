@@ -1,0 +1,20 @@
+# GOVERNANCE - agent roles, regulations, and safety enforcement
+**Owner:** Shaela Beard · Understance · Open Agent Hackathon 2026 · Track 2
+**Status:** Starter; to be expanded from the build spec at the relevant phase (spec 17 agent roles, spec 19 governance enforcement, spec 23 manifest, spec 24 user safeguards).
+**Last updated:** Oct 26, 2026.
+
+Source for this starter: the "Agent governance" section of CLAUDE.md. These are the rules the build must satisfy. None is enforced by code yet; each becomes real only when the test that enforces it is written and shown to fail on a planted violation at its build step (see docs/BUILD_ORDER.md, step 2.6 governance tests and 2.6a capabilities manifest).
+
+## Rules
+1. **Read-only on the subject repo.** There is NO apply-change, write, or delete capability anywhere. None is to be added. A governance test asserts the subject repo is byte-for-byte unchanged after any run (0 files created, modified, or deleted).
+2. **Least-privilege ports per agent.** Each agent (`Planner`, `Retriever`, `Evaluator`, `Explainer`; see docs/CONVENTIONS.md) is constructed with only the ports its role needs. No agent receives a capability it does not need.
+3. **Secrets only inside adapters.** Secrets live in environment variables and are read only inside adapters. Agents never receive raw clients or tokens.
+4. **Facts only from the FactStore, each claim with a resolving evidence id.** Every output claim must carry an evidence id that resolves to a Fact in the FactStore, or the claim is dropped.
+5. **Repo content is data, never instructions.** Subject-repo file contents are never fed to the model as instructions.
+6. **Every action and every refusal is logged.** Each agent action, and each refused action, is written to logs/ as JSONL using the trace fields in docs/CONVENTIONS.md.
+7. **Self-describing: the capabilities-and-limits manifest.** The tool never lets a user assume what it can or cannot do. A manifest with four lists, DOES / DOES NOT / CANNOT REACH / YOU, is queryable via `--capabilities` and `GET /capabilities`, and shown in each run's output, the README, and the demo. Each DOES NOT and each limit references the test that enforces it; a claim with no backing test is not allowed; a test keeps the manifest in sync with the code (spec 23).
+
+## To be expanded
+- Spec 17: the full role and regulation for each agent.
+- Spec 19: the governance enforcement tests (the step 2.6 GATE in docs/BUILD_ORDER.md).
+- Spec 24: the user safeguards (see also docs/THREAT_MODEL.md).
