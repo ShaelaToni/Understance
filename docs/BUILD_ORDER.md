@@ -70,7 +70,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 ## PHASE 1 - DOMAIN + PORTS + FITNESS FUNCTION (no sponsors)
 - [x] 1.1 domain/ pure entities, in two passes. Pass 1: Module, Dependency, DependencyGraph (with orphans()). Pass 2: Finding, Evidence, Provenance. Symbol is deferred to about 2.4 (compute_blast_radius), the first step that uses symbol-level dependencies (see docs/DECISIONS.md). GATE: construct and behave, zero outside imports.
 - [x] 1.2 ports/ four interfaces: SourceReader, FactStore, Narrator, MemoryStore.
-- [ ] 1.3 tests/test_architecture.py (dependency-direction fitness function). GATE: passes, and fails on a planted violation.
+- [x] 1.3 tests/test_architecture.py (dependency-direction fitness function). GATE: passes, and fails on a planted violation.
 
 ## PHASE 2 - USE CASES WITH FAKES (no sponsors; this is sample mode)
 - [ ] 2.1 sample_app/ small Python repo = a tiny subscription SaaS (subscriptions, billing, access, notifications, api, tests), crafted so it also contains one import chain, one orphan, one untested module, one circular dependency. This repo carries the demo scenario: the request "add customer cancellation" with the unresolved policy "immediate or end of billing period?" that the agent must STOP and ask, not invent.

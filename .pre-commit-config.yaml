@@ -4,3 +4,11 @@ repos:
     hooks:
       - id: ruff-check
       - id: ruff-format
+  - repo: local
+    hooks:
+      - id: architecture
+        name: architecture fitness (dependency rule)
+        entry: .venv/bin/python -m pytest tests/test_architecture.py -q
+        language: system
+        pass_filenames: false
+        always_run: true

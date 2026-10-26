@@ -284,6 +284,13 @@ Understanding gate closed Oct 26: Shaela restated the gateway concept and all fo
 ## Sprint speed change (Oct 26, 5pm EST): understanding gate becomes a non-blocking snippet
 Part 4 of the five-part done gate is amended for the sprint: a short plain-language snippet of what each step did is recorded (for the demo and the record); Shaela's own-words restatement is no longer required to advance. The other four gate parts are unchanged, and fitness tests are still shown to fail on a planted violation. Reason: recover speed the day before the deadline without touching code quality. Actor: Shaela (approved).
 
+## Phase 1.3: architecture fitness test (the dependency rule, enforced)
+Decision: tests/test_architecture.py parses every file under domain/, ports/, usecases/ with ast and fails if any import is neither standard library (sys.stdlib_module_names) nor an allowed inner sibling (domain->domain; ports->domain,ports; usecases->domain,ports,usecases). Relative imports in the inner rings are flagged too, so inner rings use absolute imports only and the check cannot be evaded by a relative climb like "from ..adapters import x". Wired into the pre-commit hook so it runs on every commit.
+Why: the dependency rule is the foundation of the clean architecture; a continuous, deterministic fitness function keeps the core independent of adapters and third parties. Static ast only (no import of our modules). Known limit: dynamic imports (importlib) are out of scope for v1.
+Layer: 1.3 architecture fitness
+Gate: tests/test_architecture.py (5 tests), shown to fail on a planted violation (import requests in domain/graph.py), and running in pre-commit.
+Date: Oct 26. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."
