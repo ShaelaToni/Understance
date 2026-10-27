@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 3 (real end-to-end through the sponsors). Phases 0 and 1 complete; Phase 2 complete except 2.6 and 2.6a (governance tests and the capabilities manifest), deferred for time.
-- **Step:** Phase 3.2 done (live check matched). Phase 3.3 code done: the Nightshift narrator writes a short summary from the verified links, a guard blocks any model claim that states evidence, and the proof lines stay deterministic. The live check is Shaela's.
-- **Next:** Shaela runs scripts/check_nightshift.py; then 3.4, the H-MEM memory, and 3.5, one real end-to-end run.
+- **Step:** Phases 3.2 and 3.3 done (both live checks passed). Phase 3.4 code done: H-MEM memory keeps the owner's decisions per repo in an append-only ledger.
+- **Next:** 3.5, one real end-to-end run through Zetaris, Nightshift and H-MEM, with POST /run, the trace files and sample mode.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 186 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 3 answer, 3 template narrator, 20 agents, 11 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store, 25 nightshift narrator)
+- Tests: 213 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 5 answer, 3 template narrator, 20 agents, 11 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store, 25 nightshift narrator, 25 hmem memory)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -200,3 +200,11 @@
 - RED: tests/test_nightshift_narrator.py failed to import the new adapter. GREEN: full suite 186 passed. Planted violation: removing the file-path check made test_the_observed_distortion_is_blocked_and_the_proof_stands_alone fail; restored and green again.
 - Live check: scripts/check_nightshift.py, run by Shaela after this commit (it reads .env); result recorded when observed.
 - Snippet (gate part 4): Understance now asks a model to say, in plain words, what the verified links mean. It hands the model the links only, never the files or lines, and checks every sentence that comes back. This morning the model claimed billing lives at api.py line 4, which is wrong; that sentence would now be blocked, and the answer would show only the proof, file and line, straight from the facts.
+
+### Oct 27, Phase 3.3 live check
+- Shaela ran scripts/check_nightshift.py: receipt rcpt_req_fploapv2, local Qwen 2.5 1.5B, 2069 ms, privacy local-only, egress none, cross-check passed; the model's sentence passed the guard and was shown above the 8 proof lines. Gate met; 3.3 ticked. Limit recorded in DECISIONS: the guard does not judge a sentence's direction or meaning.
+
+### Oct 27, Phase 3.4 H-MEM memory
+- Directive (Shaela): H-MEM in Python behind MemoryStore, decisions only for now; README wording exact.
+- RED: tests/test_hmem_memory.py failed to import the adapter, and the 2 Decision tests failed to import Decision. GREEN: full suite 213 passed. Planted violation: dropping the superseded penalty made test_the_superseded_penalty_holds_when_the_old_record_came_first fail; restored and green again.
+- Snippet (gate part 4): tell Understance once how cancellation should work, and it remembers, in a plain file on your machine that is only ever added to. Change your mind later and the new answer wins, while the old one stays on the record with who decided and when.

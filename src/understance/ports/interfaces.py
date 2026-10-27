@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from understance.domain.answer import Narration
+from understance.domain.answer import Decision, Narration
 from understance.domain.finding import Finding
-from understance.domain.graph import DependencyGraph
+from understance.domain.graph import DependencyGraph, OpenQuestion
 
 
 class FactsUnavailable(Exception):
@@ -43,12 +43,12 @@ class Narrator(ABC):
 
 
 class MemoryStore(ABC):
-    """Keep the local per-repo record of findings (decisions added later)."""
+    """Keep the owner's decisions for one repo across runs, so no agent asks twice."""
 
     @abstractmethod
-    def save_finding(self, finding: Finding) -> None:
-        """Save a finding to the local record."""
+    def record_decision(self, decision: Decision) -> None:
+        """Append the decision; a newer decision replaces the older one in recall."""
 
     @abstractmethod
-    def load_findings(self) -> tuple[Finding, ...]:
-        """Return the findings in the local record."""
+    def decision_for(self, question: OpenQuestion) -> Decision | None:
+        """Return the current decision for this open question, or None."""

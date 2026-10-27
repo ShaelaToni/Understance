@@ -25,6 +25,8 @@ Source for this starter: the "Agent governance" section of CLAUDE.md. These are 
 
 - The model never states evidence: it receives link summaries only, and the guard blocks any text that states a file path, a number or a module outside the verified links, or that the Meterless cross-check flags (tests/test_nightshift_narrator.py, test_the_observed_distortion_is_blocked_and_the_proof_stands_alone and test_the_guard_blocks_what_the_model_must_never_state). The Runtime API key never appears in an error (test_the_token_never_appears_in_an_error).
 
+- Memory is append-only and attributed: every H-MEM action is a ledger entry naming who acted and when; a newer decision supersedes an older one and nothing is deleted (tests/test_hmem_memory.py, test_the_ledger_is_append_only_and_names_who_decided and test_a_newer_decision_replaces_the_older_one_and_nothing_is_deleted). A repo id cannot name a path outside the memory folder (test_a_repo_id_must_be_a_plain_name).
+
 ## To be expanded
 - Spec 17: the full role and regulation for each agent.
 - Spec 19: the governance enforcement tests (the step 2.6 GATE in docs/BUILD_ORDER.md).

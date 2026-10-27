@@ -36,3 +36,19 @@ class Answer:
         object.__setattr__(self, "findings", tuple(self.findings))
         object.__setattr__(self, "blocked", tuple(self.blocked))
         object.__setattr__(self, "open_questions", tuple(self.open_questions))
+
+
+@dataclass(frozen=True)
+class Decision:
+    """An open question the owner settled: what they chose, who, and when."""
+
+    question: OpenQuestion
+    answer: str
+    decided_by: str
+    decided_at: str
+
+    def __post_init__(self):
+        if not self.answer.strip():
+            raise ValueError("a Decision must carry an answer")
+        if not self.decided_by.strip():
+            raise ValueError("a Decision must name who decided")

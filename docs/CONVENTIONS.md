@@ -24,7 +24,7 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 ## Source and test files
 - Cluster per file: entities that belong together live in one module file. `src/understance/domain/graph.py` holds `Module`, `Dependency` (with `line` and `file`, excluded from equality), `DependencyGraph` (exposes `orphans()`, `dependents_of(name)`, `dependencies_of(name)`), and `BlastRadius`. Symbol is deferred past the hackathon (Oct 27).
 - Test mirrors module: each source file has one matching test file in `tests/`. `graph.py` is covered by `tests/test_dependency_graph.py` (named for its cluster).
-- Domain module files: `graph.py` holds `Module` (with `defines`, `open_questions`, `file`, `last_commit`, `last_changed` and `tested_by`, all excluded from equality), `OpenQuestion`, `Dependency`, `DependencyGraph`, `BlastRadius`; `answer.py` holds `Answer`, `AnswerStatus`, `Narration`; `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py`, `tests/test_answer.py`, and `tests/test_finding.py`.
+- Domain module files: `graph.py` holds `Module` (with `defines`, `open_questions`, `file`, `last_commit`, `last_changed` and `tested_by`, all excluded from equality), `OpenQuestion`, `Dependency`, `DependencyGraph`, `BlastRadius`; `answer.py` holds `Answer`, `AnswerStatus`, `Narration`, `Decision` (an open question the owner settled: question, answer, decided_by, decided_at); `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py`, `tests/test_answer.py`, and `tests/test_finding.py`.
 
 ## The four ports (Phase 1.2; interfaces only)
 `SourceReader`, `FactStore`, `Narrator`, `MemoryStore`. Third-party libraries (ast, SQLite, Zetaris, Nightshift, H-MEM, coverage, pytest) live ONLY inside adapters that implement these ports.
@@ -42,6 +42,9 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 
 - `src/understance/adapters/nightshift_narrator.py` holds `NightshiftClient` (`from_env` reads `METERLESS_BASE_URL`, `METERLESS_RUNTIME_TOKEN`, `METERLESS_MODEL`), `NightshiftReply`, `NightshiftNarrator` (implements `Narrator`), `NightshiftUnavailable`, `NightshiftError` and `blocked_reason` (the guard). `scripts/check_nightshift.py` is the live check. Tested by `tests/test_nightshift_narrator.py`.
 - Words: **model claim blocked** (the guard refused the model's text; only the proof lines are shown, and the log gives the reason and the receipt), **receipt** (the Meterless record of one model request: id, routed model, privacy path, egress).
+
+- `src/understance/adapters/hmem_memory.py` holds `HMem` (the H-MEM services: store, trust ledger, feedback, query, conflicts), `MemoryRecord`, `Conflict` and `HMemMemoryStore` (implements `MemoryStore`: `record_decision`, `decision_for`; one append-only JSONL ledger per repo id). Tested by `tests/test_hmem_memory.py`.
+- Words: **decision record** (the owner's answer to an open question, kept by H-MEM so no agent asks twice), **trust ledger** (the append-only H-MEM log of every memory action, with who and when).
 
 ## Use cases (Phase 2.3 on)
 - `src/understance/usecases/analyze_repo.py` holds `AnalyzeRepo(reader, store)` with `run(root)`; tested by `tests/test_analyze_repo.py`.

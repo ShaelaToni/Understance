@@ -23,11 +23,11 @@ class _FakeNarrator(Narrator):
 
 
 class _FakeMemoryStore(MemoryStore):
-    def save_finding(self, finding):
-        self._finding = finding
+    def record_decision(self, decision):
+        self._decision = decision
 
-    def load_findings(self):
-        return ()
+    def decision_for(self, question):
+        return None
 
 
 def test_complete_source_reader_instantiates():
@@ -73,7 +73,7 @@ def test_incomplete_narrator_cannot_instantiate():
 
 def test_incomplete_memory_store_cannot_instantiate():
     class _Missing(MemoryStore):
-        def save_finding(self, finding):
+        def record_decision(self, decision):
             pass
 
     with pytest.raises(TypeError):
