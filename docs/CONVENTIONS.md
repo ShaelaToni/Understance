@@ -22,7 +22,7 @@
 A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFERRED`) and references its `Evidence` by object (no id fields until Phase 3.1).
 
 ## Source and test files
-- Cluster per file: entities that belong together live in one module file. `src/understance/domain/graph.py` holds `Module`, `Dependency`, `DependencyGraph`. Symbol arrives at about 2.4.
+- Cluster per file: entities that belong together live in one module file. `src/understance/domain/graph.py` holds `Module`, `Dependency` (with `line` and `file`, excluded from equality), `DependencyGraph` (exposes `orphans()`, `dependents_of(name)`, `dependencies_of(name)`), and `BlastRadius`. Symbol is deferred past the hackathon (Oct 27).
 - Test mirrors module: each source file has one matching test file in `tests/`. `graph.py` is covered by `tests/test_dependency_graph.py` (named for its cluster).
 - Domain module files: `graph.py` holds `Module`, `Dependency`, `DependencyGraph`; `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py` and `tests/test_finding.py`.
 
@@ -34,6 +34,7 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 
 ## Use cases (Phase 2.3 on)
 - `src/understance/usecases/analyze_repo.py` holds `AnalyzeRepo(reader, store)` with `run(root)`; tested by `tests/test_analyze_repo.py`.
+- `src/understance/usecases/compute_blast_radius.py` holds `ComputeBlastRadius(store)` with `run(target)`; tested by `tests/test_compute_blast_radius.py`.
 - Shared test doubles: `tests/fakes.py` holds `FakeSourceReader` and `FakeFactStore`.
 
 ## Agents (Phase 2.5)

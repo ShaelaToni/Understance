@@ -3,9 +3,11 @@ from itertools import pairwise
 from pathlib import Path
 
 from sample_app_truth import (
+    EXPECTED_BLAST_RADIUS,
     EXPECTED_CHAIN,
     EXPECTED_CYCLE,
     EXPECTED_DEPENDENCIES,
+    EXPECTED_IMPORT_LINES,
     EXPECTED_MODULES,
     EXPECTED_ORPHANS,
     EXPECTED_UNTESTED,
@@ -89,3 +91,27 @@ def test_untested_module_is_imported_by_no_fixture_test():
         imported |= _imported_names(path)
     tested = set(EXPECTED_MODULES) & imported
     assert set(EXPECTED_MODULES) - tested == set(EXPECTED_UNTESTED)
+
+
+def test_truth_import_lines_point_at_real_import_statements():
+    assert set(EXPECTED_IMPORT_LINES) == set(EXPECTED_DEPENDENCIES)
+    for (source, target), line in EXPECTED_IMPORT_LINES.items():
+        path = SAMPLE_APP.parent / (source.replace(".", "/") + ".py")
+        text = path.read_text(encoding="utf-8").splitlines()[line - 1]
+        assert "import" in text
+        assert target in text
+
+
+def _reach(start, edges):
+    found, frontier = set(), {start}
+    while frontier:
+        frontier = {t for s, t in edges if s in frontier} - found - {start}
+        found |= frontier
+    return tuple(sorted(found))
+
+
+def test_truth_blast_radius_follows_the_truth_edges():
+    reverse = [(t, s) for s, t in EXPECTED_DEPENDENCIES]
+    for target, expected in EXPECTED_BLAST_RADIUS.items():
+        assert _reach(target, reverse) == expected["dependents"]
+        assert _reach(target, EXPECTED_DEPENDENCIES) == expected["dependencies"]

@@ -26,15 +26,17 @@ class ASTSourceReader(SourceReader):
     def read_graph(self, root: Path) -> DependencyGraph:
         scan = self._scan(root)
         names = set(scan.trees)
-        edges = {
-            Dependency(name, target)
-            for name, (_, tree) in scan.trees.items()
-            for target in _import_targets(tree, name, names)
-            if target in names and target != name
-        }
+        lines: dict[tuple[str, str], int] = {}
+        for name, (_, tree) in scan.trees.items():
+            for target, line in _import_targets(tree, name, names):
+                if target in names and target != name:
+                    lines[(name, target)] = min(line, lines.get((name, target), line))
         return DependencyGraph(
             modules=tuple(Module(n) for n in sorted(names)),
-            dependencies=tuple(sorted(edges, key=lambda d: (d.source, d.target))),
+            dependencies=tuple(
+                Dependency(source, target, line, scan.trees[source][0])
+                for (source, target), line in sorted(lines.items())
+            ),
         )
 
     def scope_line(self, root: Path) -> str:
@@ -82,12 +84,12 @@ def _import_targets(tree: ast.Module, name: str, modules: set[str]):
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                yield _longest_module(alias.name, modules)
+                yield _longest_module(alias.name, modules), node.lineno
         elif isinstance(node, ast.ImportFrom):
             base = _from_base(node, name)
             for alias in node.names:
                 candidate = f"{base}.{alias.name}" if base else alias.name
-                yield candidate if candidate in modules else base
+                yield (candidate if candidate in modules else base), node.lineno
 
 
 def _longest_module(dotted: str, modules: set[str]) -> str | None:

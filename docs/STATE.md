@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 2 (use cases with fakes). Phases 0 and 1 COMPLETE (Oct 26).
-- **Step:** Phase 2.3 done: AnalyzeRepo reads a repo through the SourceReader port and stores the graph through the FactStore port.
-- **Next:** Phase 2.4: usecases/compute_blast_radius.py; on a known target, dependents match a hand trace.
+- **Step:** Phase 2.4 done: ComputeBlastRadius lists what a change to a module could affect, with the file and line behind every edge.
+- **Next:** Phase 2.5: the orchestrator and the four agents over a FakeFactStore and a TemplateNarrator, with JSONL traces showing the Evaluator sending the Planner back.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 58 pass (9 graph, 10 finding, 8 ports, 5 architecture, 8 sample_app, 15 ast reader, 3 analyze repo)
+- Tests: 73 pass (15 graph, 10 finding, 8 ports, 5 architecture, 10 sample_app, 17 ast reader, 3 analyze repo, 5 blast radius)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -163,3 +163,9 @@
 - RED: tests/test_analyze_repo.py failed to import understance.usecases.analyze_repo. GREEN: 3 passed; full suite 58 passed. Planted violation: removing the store call made the storing tests fail; restored and green again.
 - Also corrected the 0.6 status line: .claude/settings.json now holds the attribution setting and the .env read denial (added at 2.2).
 - Snippet (gate part 4): Understance now has its first complete action: point it at a project, and it reads the map and files it away as facts, the same way whether the facts go to memory today or to Zetaris tomorrow.
+
+### Oct 27, Phase 2.4 ComputeBlastRadius
+- RED: the new tests failed to import BlastRadius and ComputeBlastRadius. GREEN: full suite 73 passed. Planted violation: letting the target appear in its own radius made the radius tests fail; restored and green again.
+- Hand trace (sample_app.subscriptions): dependents access, api, billing, main, notifications; it depends on access and models; 8 import edges into it, each an observed finding with file and line (for example sample_app/access.py line 14, the import inside a function).
+- Scope: module level only; symbol level deferred past the hackathon (Shaela).
+- Snippet (gate part 4): name one part of the app, and Understance now lists everything that would feel a change to it, through every layer, and points to the exact file and line that proves each link.

@@ -1,6 +1,11 @@
 from pathlib import Path
 
-from sample_app_truth import EXPECTED_DEPENDENCIES, EXPECTED_MODULES, EXPECTED_ORPHANS
+from sample_app_truth import (
+    EXPECTED_DEPENDENCIES,
+    EXPECTED_IMPORT_LINES,
+    EXPECTED_MODULES,
+    EXPECTED_ORPHANS,
+)
 
 from understance.adapters.ast_source_reader import ASTSourceReader
 from understance.domain.graph import Dependency, Module
@@ -134,3 +139,21 @@ def test_dynamic_imports_are_named_not_followed(tmp_path):
     reader = ASTSourceReader()
     assert reader.read_graph(root).dependencies == ()
     assert "Dynamic imports seen (not followed): pkg/a.py." in reader.scope_line(root)
+
+
+def test_each_edge_records_the_line_of_its_first_import():
+    graph = ASTSourceReader().read_graph(SAMPLE_APP)
+    lines = {(d.source, d.target): d.line for d in graph.dependencies}
+    assert lines == EXPECTED_IMPORT_LINES
+    for d in graph.dependencies:
+        assert d.file == d.source.replace(".", "/") + ".py"
+
+
+def test_a_repeated_import_keeps_its_lowest_line(tmp_path):
+    root = tmp_path / "pkg"
+    _write(root / "a.py", "x = 1\nimport pkg.b\n\n\ndef f():\n    import pkg.b\n")
+    _write(root / "b.py", "")
+    graph = ASTSourceReader().read_graph(root)
+    assert [(d.source, d.target, d.line) for d in graph.dependencies] == [
+        ("pkg.a", "pkg.b", 2)
+    ]

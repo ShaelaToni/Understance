@@ -366,6 +366,14 @@ Layer: 2.3 use case
 Gate: tests/test_analyze_repo.py, 3 tests, red first then green, including the real ASTSourceReader against sample_app storing the hand-verified graph; a planted violation (the store call removed) shown failing; full suite 58 passed.
 Date: Oct 27. Actor: Shaela (approved).
 
+## Phase 2.4: blast radius at module level, with file and line per edge (Oct 27)
+Decision: src/understance/usecases/compute_blast_radius.py holds ComputeBlastRadius(store: FactStore) with run(target) -> BlastRadius. It works from stored facts alone. dependents are every module that imports the target directly or through others; dependencies are everything the target imports, directly or through others; both are sorted, cycle-safe, never list the target itself, and ignore names not in the graph. An unknown target raises ValueError instead of being guessed. Each import edge leading into the target (source among the dependents, target among the dependents or the target itself) becomes one observed Finding, "<source> imports <target>", with Evidence naming the importing file and the line of its first import. To carry the location, Dependency gains line and file (both default None, excluded from equality, so identity stays source and target); the ast reader records the importing file and the lowest import line per edge. An edge with no recorded file yields no finding, because a finding needs evidence. DependencyGraph gains dependents_of(name) and dependencies_of(name). BlastRadius(target, dependents, dependencies, findings) lives in domain/graph.py with the other graph entities.
+Why: the glossary defines BlastRadius as reverse and forward reach "with evidence per edge", and the README promises the file and the line behind each claim; recording the line at read time is the cheapest honest way to keep that promise. Excluding them from equality keeps every earlier test and the truth tuples valid. The reader, not the use case, records the file, so the use case never guesses a path from a module name (Uncle Bob and Neal Ford: the reader's naming rule stays inside the reader, so another reader can plug in).
+Scope, decided by Shaela for the time left: module level only. Symbol-level blast radius (the Oct 24 "module-and-symbol" entry) is deferred past the hackathon; Symbol stays unbuilt. The limit is stated, not hidden.
+Layer: 2.4 domain, adapter and use case
+Gate: hand-traced radius for sample_app.subscriptions and sample_app.notifications in tests/sample_app_truth.py, checked against the truth edges; 15 new tests red first then green; planted violation (the target listed in its own radius) shown failing; full suite 73 passed.
+Date: Oct 27. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

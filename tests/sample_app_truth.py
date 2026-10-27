@@ -45,3 +45,42 @@ EXPECTED_CYCLE = ("sample_app.access", "sample_app.subscriptions")
 
 # One untested module: no fixture test imports it.
 EXPECTED_UNTESTED = ("sample_app.notifications",)
+
+# Line of the first import statement behind each edge (hand-read from the files).
+EXPECTED_IMPORT_LINES = {
+    ("sample_app.main", "sample_app.api"): 3,
+    ("sample_app.api", "sample_app.access"): 3,
+    ("sample_app.api", "sample_app.billing"): 4,
+    ("sample_app.api", "sample_app.notifications"): 5,
+    ("sample_app.api", "sample_app.subscriptions"): 6,
+    ("sample_app.access", "sample_app.models"): 3,
+    ("sample_app.access", "sample_app.subscriptions"): 14,
+    ("sample_app.billing", "sample_app.models"): 3,
+    ("sample_app.billing", "sample_app.subscriptions"): 4,
+    ("sample_app.notifications", "sample_app.subscriptions"): 3,
+    ("sample_app.subscriptions", "sample_app.access"): 3,
+    ("sample_app.subscriptions", "sample_app.models"): 4,
+}
+
+# Hand-traced blast radius (BUILD_ORDER 2.4): who depends on the target, directly
+# or through others, and what the target depends on.
+EXPECTED_BLAST_RADIUS = {
+    "sample_app.subscriptions": {
+        "dependents": (
+            "sample_app.access",
+            "sample_app.api",
+            "sample_app.billing",
+            "sample_app.main",
+            "sample_app.notifications",
+        ),
+        "dependencies": ("sample_app.access", "sample_app.models"),
+    },
+    "sample_app.notifications": {
+        "dependents": ("sample_app.api", "sample_app.main"),
+        "dependencies": (
+            "sample_app.access",
+            "sample_app.models",
+            "sample_app.subscriptions",
+        ),
+    },
+}
