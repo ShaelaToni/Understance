@@ -1,0 +1,16 @@
+module_name,name
+sample_app.access,authenticate
+sample_app.access,has_access
+sample_app.access,revoke_access
+sample_app.api,end
+sample_app.api,start
+sample_app.billing,charge
+sample_app.billing,new_trial
+sample_app.billing,refund_on_cancel
+sample_app.main,run
+sample_app.models,Subscription
+sample_app.models,User
+sample_app.notifications,notify_cancellation
+sample_app.subscriptions,cancel_subscription
+sample_app.subscriptions,create_subscription
+sample_app.subscriptions,is_active

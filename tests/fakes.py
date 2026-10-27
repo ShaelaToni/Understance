@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from understance.adapters.git_history import GitHistory
 from understance.domain.graph import DependencyGraph
 from understance.ports.interfaces import FactStore, SourceReader
 
@@ -29,3 +30,10 @@ class FakeFactStore(FactStore):
         if self.graph is None:
             raise LookupError("no graph has been stored")
         return self.graph
+
+
+class FakeGitHistory(GitHistory):
+    """Report the same commit and date for every file, without running git."""
+
+    def last_changes(self, base, files):
+        return {f: ("abc1234", "2026-10-27T05:00:00Z") for f in files}

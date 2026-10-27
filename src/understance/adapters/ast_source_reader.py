@@ -34,12 +34,17 @@ class ASTSourceReader(SourceReader):
         names = set(scan.trees)
         lines: dict[tuple[str, str], int] = {}
         for name, (_, tree) in scan.trees.items():
-            for target, line in _import_targets(tree, name, names):
+            for target, line in import_targets(tree, name, names):
                 if target in names and target != name:
                     lines[(name, target)] = min(line, lines.get((name, target), line))
         return DependencyGraph(
             modules=tuple(
-                Module(n, _defines(scan.trees[n][1]), scan.questions.get(n, ()))
+                Module(
+                    n,
+                    _defines(scan.trees[n][1]),
+                    scan.questions.get(n, ()),
+                    file=scan.trees[n][0],
+                )
                 for n in sorted(names)
             ),
             dependencies=tuple(
@@ -95,7 +100,7 @@ class ASTSourceReader(SourceReader):
         scan.questions[name] = _open_questions(source, rel, tree)
 
 
-def _import_targets(tree: ast.Module, name: str, modules: set[str]):
+def import_targets(tree: ast.Module, name: str, modules: set[str]):
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:

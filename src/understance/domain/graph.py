@@ -18,6 +18,10 @@ class Module:
     name: str
     defines: tuple[str, ...] = field(default=(), compare=False)
     open_questions: tuple[OpenQuestion, ...] = field(default=(), compare=False)
+    file: str | None = field(default=None, compare=False)
+    last_commit: str | None = field(default=None, compare=False)
+    last_changed: str | None = field(default=None, compare=False)
+    tested_by: tuple[str, ...] = field(default=(), compare=False)
 
 
 @dataclass(frozen=True)

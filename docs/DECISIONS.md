@@ -96,6 +96,7 @@ Put it under the fitting heading (Strategic, Architecture, Tooling and Infra, Sc
 - Why not another language: less familiarity under a deadline and weaker standard-library parsing for this job.
 - Revisit if: n/a for v1. [Oct 24 · locked for v1]
 
+**[SUPERSEDED Oct 27 by "Phase 3.1: the facts as CSV files" below.]**
 **SQLite as the facts store** (boring, light, Zetaris-readable).
 - Why this: zero setup, tiny footprint, and Zetaris can read it.
 - Why not Postgres: heavier to stand up; only needed if the Zetaris smoke test shows it cannot read a local SQLite, then a minimal database.
@@ -390,6 +391,14 @@ Why: Shaela's rule that the agents handle real-world problems without her guidin
 Limits, stated: only decisions marked "AMBIGUOUS:" are recognised; unmarked ambiguity is a blind spot. Concept matching is by name parts, not meaning.
 Layer: 2.5b domain, adapter, orchestration
 Gate: 14 new tests red first then green, plus 1 truth check on the practice app that passes from the start because it checks the fixture, not our code, including "Add customer cancellation" resolving to sample_app.subscriptions and stopping on sample_app/subscriptions.py line 16, and the open-question text never reaching the narrator; planted violation (the decision never flagged) shown failing; full suite 119 passed.
+Date: Oct 27. Actor: Shaela (approved).
+
+## Phase 3.1: the facts as CSV files, enriched with git history and the test map (Oct 27)
+Decision: adapters/csv_fact_store.py holds CsvFactStore(folder), a FactStore that writes and reads the facts as six CSV files: modules, dependencies, defines, open_questions (source 1, the code facts), git_history (source 2) and test_map (source 3). It is the offline store for sample mode and the export Zetaris registers. adapters/enriched_source_reader.py holds EnrichedSourceReader, which plugs into the existing SourceReader port: the ast reader's map plus, per module, its file, last commit and date (adapters/git_history.py, GitHistory) and the test files that import it (adapters/module_tests.py, ModuleTests). Module gains file, last_commit, last_changed and tested_by, all excluded from equality. scripts/export_facts.py writes facts/ from sample_app; facts/ is committed, and a test fails if the code-derived files ever differ from a fresh export.
+Why: Zetaris lists no SQLite source type, and on Oct 27 a CSV uploaded to the NDP File System /file-store, registered with Create Table, answered SQL in the workbench and through the REST API (POST /api/v1.0/query/sql/start, 200, 7 records). So CSV files replace the planned SQLite store. Three sources make the Unified Semantic Layer real federation (the published criteria ask for at least 3). Uncle Bob and Ford: no fifth port, the extra sources arrive through SourceReader. Hunt and Shostack: git runs with repo-supplied programs switched off (core.fsmonitor, pager, external diff, textconv) and only reads the log. Beck: ModuleTests, not TestMap, so the test runner does not mistake it for a test class.
+Limits, stated: registering the files in Zetaris is a manual step in its UI (documented); judges use sample mode. Git history needs git and the repository's history; without it the column is empty and the run continues.
+Layer: 3.1 domain, adapters, script
+Gate: 15 new tests red first then green, including every fact surviving a round trip and the committed facts matching a fresh export; planted violation (the git guard removed) shown failing; full suite 134 passed.
 Date: Oct 27. Actor: Shaela (approved).
 
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)

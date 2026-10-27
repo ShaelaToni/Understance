@@ -1,0 +1,10 @@
+module_name,test_file
+sample_app.access,sample_app/tests/test_access.py
+sample_app.api,sample_app/tests/test_api.py
+sample_app.billing,sample_app/tests/test_billing.py
+sample_app.main,sample_app/tests/test_main.py
+sample_app.models,sample_app/tests/test_access.py
+sample_app.models,sample_app/tests/test_billing.py
+sample_app.models,sample_app/tests/test_models.py
+sample_app.models,sample_app/tests/test_subscriptions.py
+sample_app.subscriptions,sample_app/tests/test_subscriptions.py

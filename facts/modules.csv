@@ -1,0 +1,8 @@
+module_name,file
+sample_app.access,sample_app/access.py
+sample_app.api,sample_app/api.py
+sample_app.billing,sample_app/billing.py
+sample_app.main,sample_app/main.py
+sample_app.models,sample_app/models.py
+sample_app.notifications,sample_app/notifications.py
+sample_app.subscriptions,sample_app/subscriptions.py

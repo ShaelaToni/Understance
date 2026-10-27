@@ -205,3 +205,9 @@ def test_open_question_text_is_cleaned_and_capped(tmp_path):
     question = ASTSourceReader().read_graph(root).modules[0].open_questions[0]
     assert question == OpenQuestion("pkg/a.py", 1, ("x" * 400)[:300], None)
     assert len(question.text) == 300
+
+
+def test_each_module_records_its_file():
+    graph = ASTSourceReader().read_graph(SAMPLE_APP)
+    for module in graph.modules:
+        assert module.file == module.name.replace(".", "/") + ".py"

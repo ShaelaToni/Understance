@@ -1,0 +1,2 @@
+module_name,file,line,symbol,text
+sample_app.subscriptions,sample_app/subscriptions.py,16,cancel_subscription,"does cancellation take effect immediately, or at the end of the current billing period? The intended timing is not specified here."

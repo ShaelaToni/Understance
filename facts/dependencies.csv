@@ -1,0 +1,13 @@
+source,target,file,line
+sample_app.access,sample_app.models,sample_app/access.py,3
+sample_app.access,sample_app.subscriptions,sample_app/access.py,14
+sample_app.api,sample_app.access,sample_app/api.py,3
+sample_app.api,sample_app.billing,sample_app/api.py,4
+sample_app.api,sample_app.notifications,sample_app/api.py,5
+sample_app.api,sample_app.subscriptions,sample_app/api.py,6
+sample_app.billing,sample_app.models,sample_app/billing.py,3
+sample_app.billing,sample_app.subscriptions,sample_app/billing.py,4
+sample_app.main,sample_app.api,sample_app/main.py,3
+sample_app.notifications,sample_app.subscriptions,sample_app/notifications.py,3
+sample_app.subscriptions,sample_app.access,sample_app/subscriptions.py,3
+sample_app.subscriptions,sample_app.models,sample_app/subscriptions.py,4

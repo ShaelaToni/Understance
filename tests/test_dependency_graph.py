@@ -131,3 +131,19 @@ def test_a_module_records_what_it_defines_and_its_open_questions():
     assert module.open_questions == (question,)
     assert module == Module("app.a")
     assert OpenQuestion("app/a.py", 4, "x").symbol is None
+
+
+def test_a_module_records_its_file_last_change_and_tests_outside_its_identity():
+    module = Module(
+        "app.a",
+        file="app/a.py",
+        last_commit="abc1234",
+        last_changed="2026-10-27T05:00:00Z",
+        tested_by=("app/tests/test_a.py",),
+    )
+    assert (module.file, module.last_commit, module.tested_by) == (
+        "app/a.py",
+        "abc1234",
+        ("app/tests/test_a.py",),
+    )
+    assert module == Module("app.a")

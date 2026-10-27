@@ -24,7 +24,7 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 ## Source and test files
 - Cluster per file: entities that belong together live in one module file. `src/understance/domain/graph.py` holds `Module`, `Dependency` (with `line` and `file`, excluded from equality), `DependencyGraph` (exposes `orphans()`, `dependents_of(name)`, `dependencies_of(name)`), and `BlastRadius`. Symbol is deferred past the hackathon (Oct 27).
 - Test mirrors module: each source file has one matching test file in `tests/`. `graph.py` is covered by `tests/test_dependency_graph.py` (named for its cluster).
-- Domain module files: `graph.py` holds `Module` (with `defines` and `open_questions`, excluded from equality), `OpenQuestion`, `Dependency`, `DependencyGraph`, `BlastRadius`; `answer.py` holds `Answer`, `AnswerStatus`, `Narration`; `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py`, `tests/test_answer.py`, and `tests/test_finding.py`.
+- Domain module files: `graph.py` holds `Module` (with `defines`, `open_questions`, `file`, `last_commit`, `last_changed` and `tested_by`, all excluded from equality), `OpenQuestion`, `Dependency`, `DependencyGraph`, `BlastRadius`; `answer.py` holds `Answer`, `AnswerStatus`, `Narration`; `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py`, `tests/test_answer.py`, and `tests/test_finding.py`.
 
 ## The four ports (Phase 1.2; interfaces only)
 `SourceReader`, `FactStore`, `Narrator`, `MemoryStore`. Third-party libraries (ast, SQLite, Zetaris, Nightshift, H-MEM, coverage, pytest) live ONLY inside adapters that implement these ports.
@@ -33,6 +33,8 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 - `src/understance/adapters/ast_source_reader.py` holds `ASTSourceReader` (implements `SourceReader`; constructor option `max_file_bytes`, default 1,000,000). Beyond the port it exposes `scope_line(root)`, the plain-language statement of what a read covered and what it could not. Tested by `tests/test_ast_source_reader.py`.
 
 - `src/understance/adapters/template_narrator.py` holds `TemplateNarrator` (implements `Narrator`; sample mode, model "template (no model)"). Tested by `tests/test_template_narrator.py`.
+
+- `src/understance/adapters/csv_fact_store.py` holds `CsvFactStore` (implements `FactStore`; six CSV tables). `adapters/enriched_source_reader.py` holds `EnrichedSourceReader` (implements `SourceReader`), built from `ASTSourceReader`, `adapters/git_history.py` (`GitHistory`) and `adapters/module_tests.py` (`ModuleTests`). Tests mirror each file; `tests/fakes.py` adds `FakeGitHistory`.
 
 ## Use cases (Phase 2.3 on)
 - `src/understance/usecases/analyze_repo.py` holds `AnalyzeRepo(reader, store)` with `run(root)`; tested by `tests/test_analyze_repo.py`.
@@ -59,6 +61,8 @@ src/understance/adapters/
 src/understance/orchestration/     (orchestrator + agents; the shell run.py / API lives here or in a shell/ sibling)
 tests/
 sample_app/            (the trusted subscription-SaaS fixture; its own tests in sample_app/tests/ are test evidence, not graph modules)
+facts/                 (the exported facts as CSV, committed; the Zetaris sources and the sample-mode store)
+scripts/               (helper scripts, such as export_facts.py)
 evals/                 (the 7 golden-set scenarios + hand-authored expected outputs)
 input_examples/
 output_examples/
