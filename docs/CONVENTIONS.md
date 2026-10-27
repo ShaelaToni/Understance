@@ -32,6 +32,10 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 ## Adapters (Phase 2.2 on)
 - `src/understance/adapters/ast_source_reader.py` holds `ASTSourceReader` (implements `SourceReader`; constructor option `max_file_bytes`, default 1,000,000). Beyond the port it exposes `scope_line(root)`, the plain-language statement of what a read covered and what it could not. Tested by `tests/test_ast_source_reader.py`.
 
+## Use cases (Phase 2.3 on)
+- `src/understance/usecases/analyze_repo.py` holds `AnalyzeRepo(reader, store)` with `run(root)`; tested by `tests/test_analyze_repo.py`.
+- Shared test doubles: `tests/fakes.py` holds `FakeSourceReader` and `FakeFactStore`.
+
 ## Agents (Phase 2.5)
 `Planner`, `Retriever`, `Evaluator`, `Explainer`. Only the Explainer calls the model (through the Nightshift adapter). Each agent is constructed with only the ports its role needs. (The model-reaching port is Narrator; the Explainer agent reaches the model only through the Narrator port.)
 

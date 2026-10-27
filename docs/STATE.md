@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 2 (use cases with fakes). Phases 0 and 1 COMPLETE (Oct 26).
-- **Step:** Phase 2.2 done: ASTSourceReader reads sample_app into the hand-verified graph (7 modules, 12 edges, main the sole orphan), including the function-level import, and states its scope.
-- **Next:** Phase 2.3: usecases/analyze_repo.py, tested with an in-memory FakeSourceReader and the real ast adapter against sample_app.
+- **Step:** Phase 2.3 done: AnalyzeRepo reads a repo through the SourceReader port and stores the graph through the FactStore port.
+- **Next:** Phase 2.4: usecases/compute_blast_radius.py; on a known target, dependents match a hand trace.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -17,9 +17,9 @@
 - 0.5 folder skeleton: done. Commit `dd0bbe9`, pushed; `origin/main` = `dd0bbe9`.
 - 0.6 pre-commit hook: ruff-check + ruff-format (ruff-pre-commit v0.17.2) installed at `.git/hooks/pre-commit`. Shown to FAIL on a planted violation (unused `import os` blocked with F401, commit exit 1, HEAD unchanged; planted file removed, never committed). Real tree passes both hooks.
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
-- 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`.
+- 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 55 pass (9 graph, 10 finding, 8 ports, 5 architecture, 8 sample_app, 15 ast reader)
+- Tests: 58 pass (9 graph, 10 finding, 8 ports, 5 architecture, 8 sample_app, 15 ast reader, 3 analyze repo)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -158,3 +158,8 @@
 - RED: tests/test_ast_source_reader.py failed to import understance.adapters.ast_source_reader. GREEN: 15 passed; full suite 55 passed. Planted violation: reading only top-level statements made the function-level-import and exact-edges tests fail; restored and green again.
 - Also: .claude/settings.json now denies reading ./.env (not tested against the real file, by design). The 0B Zetaris box is checked: Shaela uses the participant account Zetaris provided, with the instance running on local Docker.
 - Snippet (gate part 4): Understance can now read a Python project without running any of it and draw its map: which file depends on which, including the hidden import tucked inside a function. On the practice app it matches the hand-checked answer exactly, and it says plainly what it left out and why.
+
+### Oct 27, Phase 2.3 AnalyzeRepo
+- RED: tests/test_analyze_repo.py failed to import understance.usecases.analyze_repo. GREEN: 3 passed; full suite 58 passed. Planted violation: removing the store call made the storing tests fail; restored and green again.
+- Also corrected the 0.6 status line: .claude/settings.json now holds the attribution setting and the .env read denial (added at 2.2).
+- Snippet (gate part 4): Understance now has its first complete action: point it at a project, and it reads the map and files it away as facts, the same way whether the facts go to memory today or to Zetaris tomorrow.

@@ -359,6 +359,13 @@ Layer: process (secrets)
 Gate: the settings file parses as valid JSON. It was deliberately not tested by reading the real .env, since a failed test would expose the key.
 Date: Oct 27. Actor: Shaela (approved).
 
+## Phase 2.3: AnalyzeRepo use case (Oct 27)
+Decision: src/understance/usecases/analyze_repo.py holds AnalyzeRepo(reader: SourceReader, store: FactStore) with run(root) -> DependencyGraph: it reads the repo's graph through the SourceReader port, stores it through the FactStore port, and returns it. Shared test doubles live in tests/fakes.py: FakeSourceReader (returns a fixed graph, records the roots it was asked to read) and FakeFactStore (keeps the graph in memory; loading before storing raises LookupError).
+Why: the first use case wires two ports together without knowing any adapter, so the same code runs with the real ast reader today and the Zetaris store later. The fakes are shared because 2.4 and 2.5 need the same in-memory store.
+Layer: 2.3 use case
+Gate: tests/test_analyze_repo.py, 3 tests, red first then green, including the real ASTSourceReader against sample_app storing the hand-verified graph; a planted violation (the store call removed) shown failing; full suite 58 passed.
+Date: Oct 27. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."
