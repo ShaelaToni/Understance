@@ -70,6 +70,7 @@ Put it under the fitting heading (Strategic, Architecture, Tooling and Infra, Sc
 - Revisit if: a later step needs symbol-level dependencies or dangling targets reported as findings. [Oct 26 · decided by Shaela; reversible]
 
 ## TOOLING AND INFRA
+**[SUPERSEDED Oct 27 by "Nightshift local model: Qwen 2.5 1.5B" and "NVIDIA deferred" below.]** Kept visible per the mark-superseded rule.
 **Hosted LLM through Nightshift on Nemotron, not a local open-source model (Ollama)** (eligibility, no GPU, the prize).
 - Why this: Nightshift is the mandatory primary provider, the hosted path needs no local GPU, and Nemotron chases the DGX Spark. Sovereignty is still honored because the Explainer sits behind an adapter and can swap to a local model later.
 - Why not local Ollama: it is the owned, offline ideal and you have run it before, but it is not the sponsor path, is not required, and sample mode needs no model at all because the deterministic layer is the truth.
@@ -114,6 +115,7 @@ Put it under the fitting heading (Strategic, Architecture, Tooling and Infra, Sc
 - Style: one concept per lesson, plain words first, tie each snippet to its role in the architecture, end with a teach-back so understanding is provable, not recited. Reads the canonical private project docs so lessons are Understance-specific.
 - Onboarding saved in the private project docs. [Oct 26 · decided]
 
+**[UPDATED Oct 27: deferred by Shaela; see "NVIDIA deferred" below.]**
 **Pursue the NVIDIA Nemotron award: open, default-yes-if-time** (bonus prize, zero rework to defer). [DECK candidate]
 - Why this: it is swappable behind the Explainer port, so choosing Nemotron is config (pin the model string + per-request logging), not architecture; Nightshift is meterless so no NVIDIA credits are needed; the award is large (our notes: an NVIDIA DGX Spark, about $4,699) and there is no separate application.
 - Why not commit-now or drop-now: committing now gains nothing because the award work is pure configuration plus a README line, a demo beat, and a linked receipt log, all addable as late as the day before submission; dropping it forfeits a large prize for no effort saved.
@@ -314,12 +316,40 @@ Layer: 2.1 fixture
 Gate: tests/test_sample_app.py (8 tests, red first, green); cycle-edge planted violation shown failing; fixture tests 9 passed; full suite green.
 Date: Oct 27. Actor: Shaela (approved).
 
+## Nightshift installed and answering on the build machine (Oct 27)
+Decision: Meterless Nightshift, M1 to M4 edition (from meterless.ai/mac.html), is the AI provider on the build machine, an Apple M1 Pro. The Runtime API key comes from the app's console (Cmd+5) and lives only in the local .env as METERLESS_RUNTIME_TOKEN.
+Why: Meterless (Sam Cummings, official help channel, Oct 23 and Oct 26 to 27) confirmed the requirement is Nightshift included as a working provider plus one Meterless Engine used in the product, with any model provider counting. Observed on the build machine: GET /healthz returned status ok (build m1-m4, engine ready, no cloud keys); GET /v1/models without a key returned 401 asking for "Authorization: Bearer <Runtime API key>"; the proxy-token file some participants described does not exist on this edition. First real chat request, Oct 27: receipt rcpt_req_ce9imi24, routed to webllm/Qwen2.5-1.5B-Instruct-q4f16_1-MLC (kind local), 2284 ms, privacy path local-only, egress none. Evidence is the terminal output observed by Shaela; the key was read without echo and never shown.
+Layer: sponsor setup (0B)
+Gate: one real request returned a result with a receipt. Wiring Nightshift into the Narrator adapter is Phase 3.3 and is not done yet.
+Date: Oct 27. Actor: Shaela (installed and observed).
+
+## Nightshift local model: Qwen 2.5 1.5B (Oct 27)
+Decision: Nightshift routes to webllm/Qwen2.5-1.5B-Instruct-q4f16_1-MLC (1.2 GB, 4K context), running locally on the build machine.
+Why: the best balance of size and speed on the 16 GB M1 Pro next to Zetaris (about 7 GB), and the most reliable of the small options at following a tight instruction, which is the Narrator's whole job. 4K context is ample because the Narrator receives a short list of verified findings, never source code. Why not Llama 3.2 1B (Nightshift's default): smaller but weaker at instruction following; kept as the fallback. Why not the 3B models: more memory and slower, for no gain on short narration.
+Layer: sponsor setup (Narrator model)
+Gate: the first real request routed to this model (receipt rcpt_req_ce9imi24).
+Revisit if: wording quality is too weak in the demo; then add a cloud provider in Nightshift's Setup, with no code change.
+Date: Oct 27. Actor: Shaela (decided).
+
+## NVIDIA deferred (Oct 27)
+Decision: skip the NVIDIA key and Nemotron for now; return only if time remains after the eligible floor and the Zetaris Unified Semantic Layer.
+Why: Meterless confirmed any model provider counts, so eligibility does not depend on NVIDIA. Adding it later is configuration (a key in Nightshift's Setup, Providers), with no code change.
+Layer: sponsor setup (0B)
+Date: Oct 27. Actor: Shaela (decided).
+
+## Zetaris Unified Semantic Layer is required and the main prize (Oct 27)
+Decision: the Zetaris work takes the shape of the published Unified Semantic Layer criteria: at least 3 sources, each onboarded with 2 to 3 exploratory queries; at least 1 USL with its DDL and 2 to 3 queries showing it active; 1 data quality rule shown executing; three reflection documents.
+Why: Shaela, Oct 27: "Zetaris is required and the main prize." The three sources map to facts the build already produces or plans: the code facts, the git history, and the sample app's test map.
+Layer: sponsor scope (Phase 3.2)
+Open: how the facts reach Zetaris. Zetaris lists no SQLite source type (observed in the local instance: File Source & API, Lakehouse, Database, Meta Store, Streaming, Unity Catalog), so the locked "SQLite read by Zetaris" entry meets its revisit trigger. The fork is pending Shaela.
+Date: Oct 27. Actor: Shaela (decided scope; mechanics pending).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."
 2. Read-only, no change capability: safe because it cannot act, not because it promises to.
 3. The model is called only in the Explainer: verification stays deterministic, the model only narrates.
-4. Hosted Nightshift/Nemotron over a local model, with the Narrator port behind an adapter so sovereignty is preserved.
+4. Hosted Nightshift/Nemotron over a local model, with the Narrator port behind an adapter so sovereignty is preserved. (Superseded Oct 27: a local model, Qwen 2.5 1.5B, through Nightshift; Nemotron deferred. The port is what made the switch free.)
 5. Zetaris local now, AWS as the demo-safety fallback, reversible behind the FactStore port (the agnostic seam in action).
 6. One capability done deeply, not many shallow skills: depth scores, breadth is padding.
 Add or swap as better forks appear. Keep each to the chosen path and one fair line on the alternative.

@@ -50,9 +50,9 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 - [x] 0A. Confirm the locked decisions (docs/DECISIONS.md).
 - [ ] 0B. Start sponsor setup IN PARALLEL now (downloads and accounts take time; prerequisite to Phase 3; do not block coding on these):
   - [ ] Confirm the solo HackOS team "Wisdom by Design."
-  - [ ] Register Zetaris Cloud; start the local Docker instance or the AWS instance.
-  - [ ] Install Meterless Nightshift on the M1 Pro; get the Runtime URL and token from the Console.
-  - [ ] Create the NVIDIA API key at build.nvidia.com; put it in Nightshift's Providers tab (NOT the repo).
+  - [ ] Register Zetaris Cloud; start the local Docker instance or the AWS instance. (Oct 26: the local Docker instance is running and answers SQL; see DECISIONS, Zetaris characterization finding.)
+  - [x] Install Meterless Nightshift on the M1 Pro; get the Runtime URL and token from the Console. (Oct 27: first real request, receipt rcpt_req_ce9imi24.)
+  - [ ] Create the NVIDIA API key at build.nvidia.com; put it in Nightshift's Providers tab (NOT the repo). (Deferred by Shaela, Oct 27.)
 - [ ] 0C. Create the repo:
   - [ ] Fresh local repo; first commit now.
   - [ ] .gitignore (.env, .env.*, keep !.env.example, *.pem, *.key, secrets/, credentials/).

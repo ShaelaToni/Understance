@@ -1,13 +1,13 @@
 # STATE - where the build is right now
 **Owner:** Shaela Beard · Understance · Open Agent Hackathon 2026 · Track 2
 **Rule:** kept current at the end of every step (part of the done-gate). Logs the questions asked and the answers given, not just outcomes, so a newcomer can reconstruct what was done and why.
-**Last updated:** Oct 26, 2026.
+**Last updated:** Oct 27, 2026.
 
 ## Current position
 - **Phase:** 2 (use cases with fakes). Phases 0 and 1 COMPLETE (Oct 26).
 - **Step:** Phase 2.1 done: corrected fixture matches BUILD_ORDER line 76 (access module, subscriptions <-> access cycle, in-fixture tests, notifications untested).
 - **Next:** Phase 2.2: the ast SourceReader adapter. It must capture every import in a file, including imports inside functions, and must exclude sample_app/tests/ (test evidence, not graph modules) and state that exclusion in its scope line.
-- **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
+- **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
 - 0.1 git init: done. Branch `main`.
@@ -24,7 +24,7 @@
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
 2. ~~Folder skeleton: start kit vs CONVENTIONS.md~~ RESOLVED Oct 26: CONVENTIONS.md is authoritative.
-3. **BUILD_ORDER.md Phase 0 items not in the start kit:** 0B Nightshift + NVIDIA-key setup pending before Phase 3; footprint report/test deferred to Phase 2/3; `evals/` comes with the 0.5 skeleton (CONVENTIONS.md). The coding tool's attribution setting is done at 0.6. 0A: see thread 10.
+3. **BUILD_ORDER.md Phase 0 items not in the start kit:** 0B update (Oct 27): Zetaris and Nightshift are running on the build machine and NVIDIA is deferred (see the Oct 27 session log entry); footprint report/test deferred to Phase 2/3; `evals/` comes with the 0.5 skeleton (CONVENTIONS.md). The coding tool's attribution setting is done at 0.6. 0A: see thread 10.
 4. **GOVERNANCE.md and THREAT_MODEL.md are starters** drawn from CLAUDE.md; to be expanded from spec 17/19/23/24 and Shostack + STRIDE at the relevant phase.
 5. ~~GitHub email verification~~ RESOLVED Oct 26: Shaela verified `git@shaelabeard.com` on her GitHub account.
 6. ~~No `src/understance/__init__.py`~~ RESOLVED Oct 26 (Shaela): empty `src/understance/__init__.py` added, so `understance` is a regular package.
@@ -145,3 +145,10 @@
 
 ### Oct 27, README overhaul
 - README replaced with the approved overhaul: problem-first story, an honest FAQ, plain-English dated milestones (only what works is checked), and verified Nightshift setup steps (M1 to M4 edition, local Qwen 2.5 1.5B, .env names). Every capability not yet built is marked in progress.
+
+### Oct 27, sponsor setup recorded
+- Directive (Shaela): record the Zetaris and Nightshift setup with its evidence, so the README milestones and the project record agree. Older log lines (including the Oct 26 line that calls 0B pending) are kept as written; this entry supersedes them.
+- Zetaris (Oct 26): local Docker instance on the build machine (amd64 under Rosetta, about 7 GB while running). `SELECT 1` returned 1 and `SELECT * FROM NY_TAXI.taxi_zones LIMIT 5` returned typed rows; recorded in DECISIONS as the Zetaris characterization finding.
+- Nightshift (Oct 27): M1 to M4 edition on the Apple M1 Pro. First real request: receipt rcpt_req_ce9imi24, routed to the local Qwen 2.5 1.5B model, 2284 ms, privacy path local-only, egress none. Evidence: terminal output observed by Shaela; the key was never shown. Not yet wired into the Narrator adapter (Phase 3.3).
+- Decisions recorded in DECISIONS: Nightshift installed and answering; Qwen 2.5 1.5B as the local model; NVIDIA deferred; the Zetaris Unified Semantic Layer as required scope. The Oct 24 hosted-Nemotron entry is marked superseded.
+- Left open: the 0B Zetaris box stays unchecked until Shaela confirms the Zetaris Cloud registration; the HackOS team box is unchanged.
