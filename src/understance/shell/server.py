@@ -4,8 +4,10 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from understance.shell.app import App
+from understance.shell.capabilities import MANIFEST
 
 MAX_BODY_BYTES = 10_000
+NOT_FOUND = "use POST /run, GET /capabilities or GET /health"
 
 
 def make_server(app: App, host: str = "0.0.0.0", port: int = 8000) -> HTTPServer:
@@ -15,12 +17,14 @@ def make_server(app: App, host: str = "0.0.0.0", port: int = 8000) -> HTTPServer
         def do_GET(self):
             if self.path == "/health":
                 self._send(200, {"status": "ok", "mode": app.mode})
+            elif self.path == "/capabilities":
+                self._send(200, MANIFEST)
             else:
-                self._send(404, _error("not_found", "use POST /run or GET /health"))
+                self._send(404, _error("not_found", NOT_FOUND))
 
         def do_POST(self):
             if self.path != "/run":
-                self._send(404, _error("not_found", "use POST /run or GET /health"))
+                self._send(404, _error("not_found", NOT_FOUND))
                 return
             length = int(self.headers.get("Content-Length") or 0)
             if length > MAX_BODY_BYTES:

@@ -5,7 +5,7 @@
 
 ## Current position
 - **Phase:** 3 (real end-to-end through the sponsors). Phases 0 and 1 complete; Phase 2 complete except 2.6 and 2.6a (governance tests and the capabilities manifest), deferred for time.
-- **Step:** Phases 3.2 to 3.4 done. Phase 3.5 code done: run.py and POST /run answer through Zetaris, Nightshift and H-MEM (or offline in sample mode), with a trace file per run and the ask-once decision loop.
+- **Step:** Phases 3.2 to 3.4 done. Phase 3.5 code done: run.py and POST /run answer through Zetaris, Nightshift and H-MEM (or offline in sample mode), with a trace file per run and the ask-once decision loop. Step 3.6 done: the capabilities manifest (run.py --capabilities, GET /capabilities, a scope line in every answer) and the 7 evals.
 - **Next:** Shaela's live run (GATE 3); then the README, the Zetaris write-ups, the video, the deck and the submission.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 238 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 5 answer, 3 template narrator, 20 agents, 14 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store, 25 nightshift narrator, 25 hmem memory, 2 read-only memory store, 16 app, 4 server)
+- Tests: 253 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 5 answer, 3 template narrator, 20 agents, 14 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store, 25 nightshift narrator, 25 hmem memory, 2 read-only memory store, 16 app, 4 server, 6 capabilities, 9 evals)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -215,3 +215,9 @@
 - Examples: input_examples/ holds 3 request bodies; output_examples/ holds their sample-mode answers and one trace.
 - GATE 3: Shaela's live run, recorded when observed.
 - Snippet (gate part 4): ask Understance about adding customer cancellation and it traces the 5 modules a change would reach, with the proof, then stops on the open policy question. Answer it once, and it records your decision in H-MEM; ask again tomorrow and it reminds you what you decided, with who and when, instead of asking twice. Every step is in a trace file, and it runs offline when the sponsors are not there.
+
+### Oct 27, step 3.6 the capabilities manifest and the evals
+- Directive (Shaela): keep the evals and the capabilities manifest; Docker and NVIDIA cut; Phase 4 as time allows.
+- RED: tests/test_capabilities.py failed to import the manifest. The 7 evals passed from the start: they pin behavior built in 3.5. GREEN: full suite 253 passed. Planted violation: naming a test that does not exist in the manifest made test_every_claim_and_limit_names_a_test_that_exists fail; restored and green again.
+- Output examples regenerated in sample mode (every answer now carries the scope line).
+- Snippet (gate part 4): ask Understance what it can and cannot do, and it answers from a list where every promise points to the test that proves it. Seven scenarios, written before the answers were seen, run on every commit, and the code it reads is checked unchanged afterwards.

@@ -447,6 +447,14 @@ Layer: 3.5 domain, orchestration, shell
 Gate: 25 new tests (16 app, 4 server, 3 orchestrator, 2 read-only memory) plus updated answer, narrator and least-privilege tests, red first, then green; 15 planted violations, each shown failing a test before this instruction was sent; full suite 238 passed. GATE 3 (one live run touching Zetaris, H-MEM and Nightshift, logged) is Shaela's live run, recorded when observed.
 Date: Oct 27. Actor: Shaela (approved).
 
+## Step 3.6: the capabilities manifest and the seven evals (Oct 27)
+Decision: src/understance/shell/capabilities.py holds MANIFEST, four lists: does, does_not, cannot_reach and you (what stays the owner's call). Every does, does_not and cannot_reach line names the test that enforces it, as "tests/<file>.py::<test name>"; tests/test_capabilities.py fails if a named test does not exist, so the list cannot drift from the code. run.py --capabilities prints it with no settings at all, GET /capabilities serves it, and every answer carries SCOPE_LINE in a "scope" field. evals/ holds 7 golden scenarios, each a JSON file of requests with expected outputs written by hand from the sample app's verified truth: direct impact, a concept word with the open decision, ask once (three steps), an unknown module, two modules, a module nothing imports, and instructions written into a question. tests/test_evals.py runs them in sample mode and checks the subject repo is byte-for-byte unchanged after all of them.
+Why: Shaela (Oct 27) kept the evals and the manifest when Docker and NVIDIA were cut. The manifest is how a judge or a new user learns what Understance does and where it stops, and each limit is backed by a test rather than a promise. The evals are the golden set the build was specified against.
+Scope: this ticks 2.6a, the evals line of 0C and 5.1. From the 2.6 gate, three of four are enforced (the Explainer holds no write handle, an unsupported claim is blocked, instructions in a question produce no action and no change); "an off-list agent action is refused and logged" is not built, since the agents have no action list beyond reading and answering. The footprint report and its timing figures are not built; the subject-unchanged half is the eval test above.
+Layer: 3.6 shell, evals
+Gate: 15 new tests (6 capabilities, 9 evals); the capabilities tests red first (no module), the evals pass from the start because they pin behavior built in 3.5; 5 planted violations, each shown failing a test before this instruction was sent; full suite 253 passed.
+Date: Oct 27. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

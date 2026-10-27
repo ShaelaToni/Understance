@@ -1,0 +1,27 @@
+{
+  "id": "01_direct_impact",
+  "about": "A question that names a module gets every module a change could reach, with the proof.",
+  "steps": [
+    {
+      "request": {
+        "question": "What would changing billing affect?"
+      },
+      "expect": {
+        "http": 200,
+        "status": "answered",
+        "target": "sample_app.billing",
+        "affected": [
+          "sample_app.api",
+          "sample_app.main"
+        ],
+        "findings": 2,
+        "open_question_lines": [],
+        "decisions": 0,
+        "answer_contains": [
+          "sample_app.api imports sample_app.billing (sample_app/api.py, line 4)",
+          "sample_app.main imports sample_app.api (sample_app/main.py, line 3)"
+        ]
+      }
+    }
+  ]
+}

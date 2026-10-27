@@ -20,6 +20,7 @@ from understance.adapters.zetaris_fact_store import ZetarisClient, ZetarisFactSt
 from understance.domain.answer import Answer, AnswerStatus, Decision
 from understance.orchestration.orchestrator import TRACE_FIELDS, Orchestrator, assemble
 from understance.ports.interfaces import DataQualityError
+from understance.shell.capabilities import SCOPE_LINE
 
 SUBJECT = "sample_app"
 MAX_QUESTION_CHARS = 500
@@ -206,6 +207,7 @@ class App:
                 for d in answer.decisions
             ],
             "model": answer.model,
+            "scope": SCOPE_LINE,
             "trace_file": trace.path.name,
         }
 

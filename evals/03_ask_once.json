@@ -1,0 +1,50 @@
+{
+  "id": "03_ask_once",
+  "about": "The owner answers the open question once; it is recorded and recalled, never asked again.",
+  "steps": [
+    {
+      "request": {
+        "question": "Add customer cancellation"
+      },
+      "expect": {
+        "http": 200,
+        "status": "needs_decision",
+        "decisions": 0
+      }
+    },
+    {
+      "request": {
+        "question": "Add customer cancellation",
+        "decision": {
+          "answer": "at the end of the billing period",
+          "decided_by": "Shaela"
+        }
+      },
+      "expect": {
+        "http": 200,
+        "status": "answered",
+        "open_question_lines": [],
+        "decisions": 1,
+        "answer_contains": [
+          "Decided: at the end of the billing period (by Shaela"
+        ]
+      }
+    },
+    {
+      "request": {
+        "question": "Add customer cancellation"
+      },
+      "expect": {
+        "http": 200,
+        "status": "answered",
+        "decisions": 1,
+        "answer_contains": [
+          "so I am not asking again"
+        ],
+        "answer_excludes": [
+          "Which should it be?"
+        ]
+      }
+    }
+  ]
+}

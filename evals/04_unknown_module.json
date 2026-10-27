@@ -1,0 +1,21 @@
+{
+  "id": "04_unknown_module",
+  "about": "A question that matches no module is answered with a question back, never a guess.",
+  "steps": [
+    {
+      "request": {
+        "question": "What would changing payments affect?"
+      },
+      "expect": {
+        "http": 200,
+        "status": "needs_input",
+        "target": null,
+        "affected": [],
+        "findings": 0,
+        "answer_contains": [
+          "I could not match a module in your question. Which one do you mean?"
+        ]
+      }
+    }
+  ]
+}

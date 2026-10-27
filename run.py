@@ -2,7 +2,8 @@
 
   .venv/bin/python run.py "What would changing billing affect?"
   .venv/bin/python run.py "Add customer cancellation" --decide "at the end of the billing period" --by Shaela
-  .venv/bin/python run.py --serve        (POST /run and GET /health on 0.0.0.0:$PORT, default 8000)
+  .venv/bin/python run.py --capabilities (what it does, does not do, and cannot reach)
+  .venv/bin/python run.py --serve        (POST /run, GET /capabilities, GET /health on 0.0.0.0:$PORT)
 
 SAMPLE_MODE=true runs offline from facts/ with no model, and never reads .env.
 Otherwise the settings come from .env (see .env.example).
@@ -18,6 +19,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from understance.shell.app import App, load_settings, stderr_echo
+from understance.shell.capabilities import MANIFEST
 from understance.shell.server import make_server
 
 
@@ -29,8 +31,14 @@ def main(argv=None) -> int:
     parser.add_argument("--decide", help="your answer to the open decision")
     parser.add_argument("--by", help="who is deciding (needed with --decide)")
     parser.add_argument("--serve", action="store_true", help="serve POST /run")
+    parser.add_argument(
+        "--capabilities", action="store_true", help="print what it does and cannot do"
+    )
     parser.add_argument("--logs", type=Path, help="folder for traces and memory")
     args = parser.parse_args(argv)
+    if args.capabilities:
+        print(json.dumps(MANIFEST, indent=2))
+        return 0
     env = load_settings(os.environ, ROOT / ".env")
     try:
         app = App(env, ROOT, logs=args.logs, echo=print if args.serve else stderr_echo)

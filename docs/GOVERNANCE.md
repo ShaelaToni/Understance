@@ -29,6 +29,8 @@ Source for this starter: the "Agent governance" section of CLAUDE.md. These are 
 
 - Agents recall decisions and never record them: the Evaluator holds a ReadOnlyMemoryStore that refuses every write; only the owner's request records a decision (tests/test_orchestrator.py, test_an_agent_can_recall_a_decision_but_never_record_one; tests/test_read_only_memory_store.py). Sample mode never reads .env (tests/test_app.py, test_sample_mode_set_in_the_environment_never_reads_the_env_file). An internal error returns the exception type only, never its text (test_an_unexpected_failure_is_a_structured_error).
 
+- Every limit Understance states is backed by a named test, and the manifest fails its own test if one goes missing (tests/test_capabilities.py). The subject repo is byte-for-byte unchanged after all seven evals, including one whose question asks it to delete a module (tests/test_evals.py, test_the_subject_repo_is_unchanged_after_every_eval).
+
 ## To be expanded
 - Spec 17: the full role and regulation for each agent.
 - Spec 19: the governance enforcement tests (the step 2.6 GATE in docs/BUILD_ORDER.md).

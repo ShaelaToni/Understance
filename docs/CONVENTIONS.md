@@ -56,6 +56,8 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 - `orchestration/read_only_memory_store.py` holds `ReadOnlyMemoryStore` (agents recall decisions, never record them). Tested by `tests/test_read_only_memory_store.py`.
 - Request: `{"question": str, "decision": {"answer": str, "decided_by": str}}` (decision optional). Response: `run_id`, `mode`, `status`, `question`, `target`, `affected`, `answer`, `findings`, `blocked`, `open_questions`, `decisions`, `model`, `trace_file`. Error: `{"error": {"type", "message"}, "run_id"}` with types `bad_request`, `nothing_to_decide`, `data_quality`, `internal`, `configuration`, `not_found`, `too_large`.
 - Files: `logs/trace-<run_id>.jsonl`, `logs/memory/<repo id>.jsonl`; run ids read `run-<UTC time>-<6 hex>`. Examples: `input_examples/` (request bodies) and `output_examples/` (their answers, plus one trace).
+- `shell/capabilities.py` holds `MANIFEST` (`does`, `does_not`, `cannot_reach`, `you`; each limit names its test as `tests/<file>.py::<test>`) and `SCOPE_LINE` (in every answer as `scope`). Served by `run.py --capabilities` and GET /capabilities. Tested by `tests/test_capabilities.py`.
+- `evals/<nn>_<name>.json` holds one golden scenario: `id`, `about`, `steps` (each a `request` and its hand-written `expect`). Run by `tests/test_evals.py`.
 - Words: **sample mode** (offline: facts/, no model, no network, .env never read), **live mode** (Zetaris, Nightshift, H-MEM), **ask once** (a recorded decision is recalled, not asked again).
 
 ## Agents (Phase 2.5)

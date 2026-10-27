@@ -1,5 +1,5 @@
 {
-  "run_id": "run-20261027T162404Z-aab02a",
+  "run_id": "run-20261027T162757Z-330b45",
   "mode": "sample",
   "status": "answered",
   "question": "What would changing billing affect?",
@@ -25,5 +25,6 @@
   "open_questions": [],
   "decisions": [],
   "model": "template (no model)",
-  "trace_file": "trace-run-20261027T162404Z-aab02a.jsonl"
+  "scope": "Scope: reads the Python imports of sample_app statically, at module level, and changes nothing. Dynamic imports, reflection, generated code and other languages are not followed. Full list: run.py --capabilities.",
+  "trace_file": "trace-run-20261027T162757Z-330b45.jsonl"
 }

@@ -1,0 +1,19 @@
+{
+  "id": "05_two_modules",
+  "about": "A question that names two modules asks which one to trace.",
+  "steps": [
+    {
+      "request": {
+        "question": "Compare billing and access"
+      },
+      "expect": {
+        "http": 200,
+        "status": "needs_input",
+        "target": null,
+        "answer_contains": [
+          "Your question names more than one module: sample_app.access, sample_app.billing."
+        ]
+      }
+    }
+  ]
+}

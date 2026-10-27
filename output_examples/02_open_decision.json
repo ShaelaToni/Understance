@@ -1,5 +1,5 @@
 {
-  "run_id": "run-20261027T162405Z-fc0c34",
+  "run_id": "run-20261027T162758Z-e24a86",
   "mode": "sample",
   "status": "needs_decision",
   "question": "Add customer cancellation",
@@ -65,5 +65,6 @@
   ],
   "decisions": [],
   "model": "template (no model)",
-  "trace_file": "trace-run-20261027T162405Z-fc0c34.jsonl"
+  "scope": "Scope: reads the Python imports of sample_app statically, at module level, and changes nothing. Dynamic imports, reflection, generated code and other languages are not followed. Full list: run.py --capabilities.",
+  "trace_file": "trace-run-20261027T162758Z-e24a86.jsonl"
 }

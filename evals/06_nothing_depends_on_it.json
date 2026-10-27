@@ -1,0 +1,21 @@
+{
+  "id": "06_nothing_depends_on_it",
+  "about": "A module nothing imports is said to be safe to change on its own, with no model call.",
+  "steps": [
+    {
+      "request": {
+        "question": "What would changing main affect?"
+      },
+      "expect": {
+        "http": 200,
+        "status": "answered",
+        "target": "sample_app.main",
+        "affected": [],
+        "findings": 0,
+        "answer_contains": [
+          "Nothing else in this project imports sample_app.main, so a change to it stays inside it."
+        ]
+      }
+    }
+  ]
+}

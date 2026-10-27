@@ -1,0 +1,32 @@
+{
+  "id": "02_concept_word_and_open_decision",
+  "about": "A request in product words finds the module behind it, traces the impact, then stops on the open policy question.",
+  "steps": [
+    {
+      "request": {
+        "question": "Add customer cancellation"
+      },
+      "expect": {
+        "http": 200,
+        "status": "needs_decision",
+        "target": "sample_app.subscriptions",
+        "affected": [
+          "sample_app.access",
+          "sample_app.api",
+          "sample_app.billing",
+          "sample_app.main",
+          "sample_app.notifications"
+        ],
+        "findings": 8,
+        "open_question_lines": [
+          16
+        ],
+        "decisions": 0,
+        "answer_contains": [
+          "sample_app.access imports sample_app.subscriptions (sample_app/access.py, line 14)",
+          "Which should it be? Tell me, and I will record your decision."
+        ]
+      }
+    }
+  ]
+}

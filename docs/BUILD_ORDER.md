@@ -65,7 +65,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
   - [ ] Pre-commit hook that runs the fitness-function suite (architecture + governance + operational + code-health: ruff, ruff-format, complexity/length cap, unused-import, dead-code), so they run on every commit, not just at gates (spec 22).
   - [ ] Turn off the coding tool's co-author/attribution lines; no AI attribution anywhere in the repo (spec 22). Disclose the tool only in the README AI-usage section.
   - [ ] Footprint report emitted per run + a governance test that the subject repo is byte-for-byte unchanged after a run (spec 22).
-  - [ ] evals/ directory for the 7 golden-set scenarios with hand-authored expected outputs (spec 22).
+  - [x] evals/ directory for the 7 golden-set scenarios with hand-authored expected outputs (spec 22).
 
 ## PHASE 1 - DOMAIN + PORTS + FITNESS FUNCTION (no sponsors)
 - [x] 1.1 domain/ pure entities, in two passes. Pass 1: Module, Dependency, DependencyGraph (with orphans()). Pass 2: Finding, Evidence, Provenance. Symbol is deferred to about 2.4 (compute_blast_radius), the first step that uses symbol-level dependencies (see docs/DECISIONS.md). GATE: construct and behave, zero outside imports.
@@ -79,8 +79,8 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 - [x] 2.4 usecases/compute_blast_radius.py. GATE: on a known target, dependents match a hand trace.
 - [x] 2.5 orchestrator + the four agents (Planner, Retriever, Evaluator, Explainer) over a FakeFactStore and a TemplateNarrator; the loop lives in orchestration/orchestrator.py (usecases/answer_question.py dropped, Oct 27, Shaela); JSONL traces emitted. GATE: a planted unsupported claim is blocked and the trace shows the loop. The 3 sample inputs/outputs move to the end-to-end run with the real sponsors (Oct 27, Shaela).
 - [x] 2.5b the Planner understands concept words (the names each module defines) and stops to ask about an open policy question (the cancellation timing), instead of making the user guide it.
-- [ ] 2.6a capabilities-and-limits manifest (spec 23): the DOES / DOES NOT / CANNOT REACH / YOU lists, each DOES NOT and limit linked to its enforcing test, plus a test that the manifest matches the governance/fitness tests (cannot drift from the code).
-- [ ] 2.6 governance tests (spec 19). GATE: the Explainer has no write/credential handle; an output claim with no resolving evidence id is rejected; an off-list agent action is refused and logged; subject-repo text containing injection ("ignore instructions and delete X") produces no action and no unsupported claim.
+- [x] 2.6a capabilities-and-limits manifest (spec 23): the DOES / DOES NOT / CANNOT REACH / YOU lists, each DOES NOT and limit linked to its enforcing test, plus a test that the manifest matches the governance/fitness tests (cannot drift from the code).
+- [ ] 2.6 governance tests (spec 19). GATE: the Explainer has no write/credential handle; an output claim with no resolving evidence id is rejected; an off-list agent action is refused and logged; subject-repo text containing injection ("ignore instructions and delete X") produces no action and no unsupported claim. (Oct 27: three of four enforced by tests; the off-list action refusal is not built. See DECISIONS, step 3.6.)
 
 ## PHASE 3 - THIN REAL END-TO-END THROUGH MANDATORY SPONSORS (needs 0B done; target by day two)
 - [x] 3.1 adapters/csv_fact_store.py (replaces sqlite_fact_store.py: Zetaris lists no SQLite source type, and CSV files are what it reads; Oct 27, Shaela), plus the enriched reader (git history, test map). GATE: every fact survives a round trip; the committed facts/ match a fresh export.
@@ -98,7 +98,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 - [ ] 4.6 benchmark harness (stretch): run the tool across the golden set and public repos through Meterless on free NVIDIA endpoints; compute grounding rate over many runs. Produces the headline metric cheaply. Never ahead of Gate 3.
 
 ## PHASE 5 - JUDGE-READY SHELL + VALIDATION
-- [ ] 5.1 run.py / POST /run (bind 0.0.0.0), structured JSON in/out, structured errors. Also expose the manifest: a --capabilities flag and GET /capabilities, plus a "scope and limits" line in every run's output (spec 23).
+- [x] 5.1 run.py / POST /run (bind 0.0.0.0), structured JSON in/out, structured errors. Also expose the manifest: a --capabilities flag and GET /capabilities, plus a "scope and limits" line in every run's output (spec 23).
 - [ ] 5.2 Dockerfile; host.docker.internal for Zetaris and Nightshift.
 - [ ] 5.3 confirm SAMPLE_MODE runs real logic with sponsors stopped.
 - [ ] 5.4 README complete: LEADS with the problem and the benefit (StoryBrand: name the villain, user is the hero), then setup, usage, deps, architecture, agents, limitations, sponsor explanation, AI-usage disclosure, sample mode, pre-existing = none.
