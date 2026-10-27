@@ -2,10 +2,10 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 
-from understance.domain.answer import Narration
+from understance.domain.answer import Decision, Narration
 from understance.domain.finding import Finding
 from understance.domain.graph import Module, OpenQuestion
-from understance.ports.interfaces import FactStore, Narrator
+from understance.ports.interfaces import FactStore, MemoryStore, Narrator
 from understance.usecases.compute_blast_radius import ComputeBlastRadius, edge_finding
 
 MAX_LISTED = 20
@@ -45,6 +45,7 @@ class Verdict:
     blocked: tuple[Finding, ...]
     missing: tuple[str, ...]
     decisions_needed: tuple[OpenQuestion, ...] = ()
+    decided: tuple[Decision, ...] = ()
 
     @property
     def complete(self) -> bool:
@@ -116,8 +117,9 @@ class Retriever:
 class Evaluator:
     """Approve only claims a stored fact supports; check the answer is closed."""
 
-    def __init__(self, facts: FactStore):
+    def __init__(self, facts: FactStore, memory: MemoryStore | None = None):
         self.facts = facts
+        self.memory = memory
 
     def evaluate(self, retrieval: Retrieval) -> Verdict:
         graph = self.facts.load_graph()
@@ -130,8 +132,11 @@ class Evaluator:
             {d.source for d in dependencies if d.target in covered} - covered
         )
         held = _open_questions_of(graph.modules, retrieval.plan.target)
-        decisions = tuple(q for q in retrieval.open_questions if q in held)
-        return Verdict(approved, blocked, tuple(missing), decisions)
+        asked = [q for q in retrieval.open_questions if q in held]
+        recalled = [self.memory.decision_for(q) if self.memory else None for q in asked]
+        needed = tuple(q for q, d in zip(asked, recalled, strict=True) if d is None)
+        decided = tuple(d for d in recalled if d is not None)
+        return Verdict(approved, blocked, tuple(missing), needed, decided)
 
 
 class Explainer:
@@ -171,6 +176,18 @@ def decision_text(questions: tuple[OpenQuestion, ...]) -> str:
             where += f", in {q.symbol}"
         lines.append(f"- {q.text[:1].upper()}{q.text[1:]} ({where})")
     lines.append("Which should it be? Tell me, and I will record your decision.")
+    return "\n".join(lines)
+
+
+def decided_text(decisions: tuple[Decision, ...]) -> str:
+    lines = ["A decision recorded earlier settles this, so I am not asking again:"]
+    for d in decisions:
+        q = d.question
+        where = f"{q.file}, line {q.line}" + (f", in {q.symbol}" if q.symbol else "")
+        lines.append(
+            f"- {q.text[:1].upper()}{q.text[1:]} Decided: {d.answer} "
+            f"(by {d.decided_by}, {d.decided_at}; {where})"
+        )
     return "\n".join(lines)
 
 

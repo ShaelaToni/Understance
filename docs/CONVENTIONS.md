@@ -51,6 +51,13 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 - `src/understance/usecases/compute_blast_radius.py` holds `ComputeBlastRadius(store)` with `run(target)`; tested by `tests/test_compute_blast_radius.py`.
 - Shared test doubles: `tests/fakes.py` holds `FakeSourceReader` and `FakeFactStore`.
 
+## Shell (Phase 3.5)
+- `src/understance/shell/app.py` holds `App` (`handle(request) -> (status, body)`), `TraceFile`, `load_settings`, `read_env_file`; `shell/server.py` holds `make_server` (POST /run, GET /health). `run.py` at the repo root is the command line (`--decide`, `--by`, `--serve`, `--logs`). Tests: `tests/test_app.py`, `tests/test_server.py`.
+- `orchestration/read_only_memory_store.py` holds `ReadOnlyMemoryStore` (agents recall decisions, never record them). Tested by `tests/test_read_only_memory_store.py`.
+- Request: `{"question": str, "decision": {"answer": str, "decided_by": str}}` (decision optional). Response: `run_id`, `mode`, `status`, `question`, `target`, `affected`, `answer`, `findings`, `blocked`, `open_questions`, `decisions`, `model`, `trace_file`. Error: `{"error": {"type", "message"}, "run_id"}` with types `bad_request`, `nothing_to_decide`, `data_quality`, `internal`, `configuration`, `not_found`, `too_large`.
+- Files: `logs/trace-<run_id>.jsonl`, `logs/memory/<repo id>.jsonl`; run ids read `run-<UTC time>-<6 hex>`. Examples: `input_examples/` (request bodies) and `output_examples/` (their answers, plus one trace).
+- Words: **sample mode** (offline: facts/, no model, no network, .env never read), **live mode** (Zetaris, Nightshift, H-MEM), **ask once** (a recorded decision is recalled, not asked again).
+
 ## Agents (Phase 2.5)
 `Planner`, `Retriever`, `Evaluator`, `Explainer`. Only the Explainer calls the model (through the Nightshift adapter). Each agent is constructed with only the ports its role needs. (The model-reaching port is Narrator; the Explainer agent reaches the model only through the Narrator port.)
 - Files: `src/understance/orchestration/agents.py` (the four agents, `Scope`, `Plan`, `Resolution`, `Retrieval`, `Verdict`), `orchestration/read_only_fact_store.py` (`ReadOnlyFactStore`), `orchestration/orchestrator.py` (`Orchestrator`, `assemble`). Tests: `tests/test_agents.py`, `tests/test_read_only_fact_store.py`, `tests/test_orchestrator.py`.
@@ -79,7 +86,7 @@ output_examples/
 logs/                  (runtime JSONL traces; gitignored)
 docs/
 ```
-Dependency management: pip + venv + `requirements.txt`. Web framework: FastAPI.
+Dependency management: pip + venv + `requirements.txt`. Web server: the standard library's http.server (Oct 27, Shaela; supersedes FastAPI).
 Test import path: `pytest.ini` at the repo root sets `pythonpath = src`, so tests import `understance...` directly. No `pyproject.toml` (by choice; tool config lives in `pytest.ini` and `ruff.toml`).
 
 ## Code health (enforced by the pre-commit hook; config in `ruff.toml`)

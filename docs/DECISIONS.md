@@ -432,6 +432,21 @@ Layer: 3.4 domain, port, adapter
 Gate: 27 new tests (25 H-MEM, 2 Decision), red first, then green; 17 planted violations, each shown failing a test before this instruction was sent (an empty source accepted, no clamp, no superseded penalty, no confidence multiplier, the conflict loser deleted, the ledger overwritten, no replay on reopen, a decision keyed by line number, and others); full suite 213 passed. Reopening reloads the per-repo record intact (test_a_decision_is_recalled_after_reopening).
 Date: Oct 27. Actor: Shaela (approved).
 
+## Phase 3.4 done-gate (Oct 27)
+The gate is met in code: the pytest port of the H-MEM conformance vectors passes, and reopening reloads the per-repo record intact (test_a_decision_is_recalled_after_reopening). Panel done-gate review against the code at 04f39d6: no open concerns. 3.4 ticked.
+Date: Oct 27. Actor: Shaela (approved).
+
+## Phase 3.5: one end-to-end run, POST /run, traces, sample mode (Oct 27)
+Decision: src/understance/shell/ is the composition root, the one place that knows every adapter (it sits outside the inner rings, so the architecture test still keeps the agents away from adapters). shell/app.py holds App (answers one request), TraceFile (writes each record with every trace field, in order, to logs/trace-<run_id>.jsonl and prints an [INFO] run_id= line), load_settings and read_env_file. shell/server.py holds make_server: POST /run (JSON in, JSON out) and GET /health, on 0.0.0.0:PORT, one request at a time. run.py at the repo root runs one question from the command line (--decide and --by record a decision) or serves (--serve).
+Modes: SAMPLE_MODE=true reads facts/ with the template narrator, no model and no network, and never reads .env. Live mode reads through Zetaris (falling back to facts/ when Zetaris is unreachable) and narrates through Nightshift (falling back to the template). Both modes keep the owner's decisions in H-MEM under logs/memory/.
+The ask-once loop: a question with an open decision returns needs_decision; the same question with a decision ({"answer", "decided_by"}) records it in H-MEM and returns answered; every later run recalls it and says so instead of asking. Agents only recall: the Evaluator holds a ReadOnlyMemoryStore (orchestration/read_only_memory_store.py) that refuses every write; only the owner's request records a decision. Answer gains decisions and Verdict gains decided; a recall is a trace record (recall_decision, status decided).
+Errors are structured JSON with a type: bad_request (400), nothing_to_decide (409), data_quality (422), internal (500, the exception type only, never its text), configuration (missing settings, with the advice to set SAMPLE_MODE=true).
+The model's sentence is labelled "In plain words (written by the model; the proof below is from the code):", after the 3.3 live check showed a sentence that passed the guard yet inverted a dependency.
+Why: the Technical Execution Guide asks for POST /run with JSON in and out, structured errors, 0.0.0.0:PORT, a trace file per run, [INFO] lines and an offline sample mode. The server uses the standard library instead of FastAPI (Shaela, Oct 27): no new dependency for a fresh clone, and every line was tested before it was sent; one request at a time is enough for a demo and keeps the memory file safe. Supersedes the FastAPI line in CONVENTIONS.
+Layer: 3.5 domain, orchestration, shell
+Gate: 25 new tests (16 app, 4 server, 3 orchestrator, 2 read-only memory) plus updated answer, narrator and least-privilege tests, red first, then green; 15 planted violations, each shown failing a test before this instruction was sent; full suite 238 passed. GATE 3 (one live run touching Zetaris, H-MEM and Nightshift, logged) is Shaela's live run, recorded when observed.
+Date: Oct 27. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

@@ -1,11 +1,13 @@
 import json
 from pathlib import Path
 
+import pytest
 from fakes import FakeFactStore
 
 from understance.adapters.ast_source_reader import ASTSourceReader
+from understance.adapters.hmem_memory import HMemMemoryStore
 from understance.adapters.template_narrator import TemplateNarrator
-from understance.domain.answer import AnswerStatus
+from understance.domain.answer import AnswerStatus, Decision
 from understance.domain.finding import Evidence, Finding, FindingKind
 from understance.orchestration.agents import (
     Evaluator,
@@ -23,6 +25,7 @@ from understance.orchestration.orchestrator import (
     assemble,
 )
 from understance.orchestration.read_only_fact_store import ReadOnlyFactStore
+from understance.orchestration.read_only_memory_store import ReadOnlyMemoryStore
 from understance.ports.interfaces import Narrator
 from understance.usecases.analyze_repo import AnalyzeRepo
 
@@ -35,6 +38,20 @@ def _store():
     store = FakeFactStore()
     AnalyzeRepo(ASTSourceReader(), store).run(SAMPLE_APP)
     return store
+
+
+def _memory(folder):
+    return HMemMemoryStore(folder, "sample_app", lambda: 1750000000000)
+
+
+def _decision():
+    graph = _store().load_graph()
+    (question,) = next(
+        m.open_questions for m in graph.modules if m.name == "sample_app.subscriptions"
+    )
+    return Decision(
+        question, "at the end of the billing period", "Shaela", "2026-10-27T16:00:00Z"
+    )
 
 
 def _run(question):
@@ -171,15 +188,57 @@ def test_every_trace_record_has_exactly_the_agreed_fields_and_is_json():
         json.dumps(record)
 
 
-def test_each_agent_holds_only_the_ports_its_role_needs():
-    store = _store()
-    orchestrator = assemble(store, TemplateNarrator(), lambda record: None, str)
+def test_each_agent_holds_only_the_ports_its_role_needs(tmp_path):
+    store, memory = _store(), _memory(tmp_path)
+    orchestrator = assemble(store, TemplateNarrator(), lambda r: None, str, memory)
     for agent in (orchestrator.planner, orchestrator.retriever, orchestrator.evaluator):
-        assert vars(agent).keys() == {"facts"}
         assert isinstance(agent.facts, ReadOnlyFactStore)
         assert agent.facts is not store
+    assert vars(orchestrator.planner).keys() == {"facts"}
+    assert vars(orchestrator.retriever).keys() == {"facts"}
+    assert vars(orchestrator.evaluator).keys() == {"facts", "memory"}
+    assert isinstance(orchestrator.evaluator.memory, ReadOnlyMemoryStore)
+    assert orchestrator.evaluator.memory is not memory
     assert vars(orchestrator.explainer).keys() == {"narrator"}
     assert isinstance(orchestrator.explainer.narrator, Narrator)
+
+
+def test_an_agent_can_recall_a_decision_but_never_record_one(tmp_path):
+    orchestrator = assemble(
+        _store(), TemplateNarrator(), lambda r: None, str, _memory(tmp_path)
+    )
+    with pytest.raises(PermissionError):
+        orchestrator.evaluator.memory.record_decision(_decision())
+
+
+def test_a_recorded_decision_is_recalled_instead_of_asked_again(tmp_path):
+    memory = _memory(tmp_path)
+    memory.record_decision(_decision())
+    records = []
+    answer = assemble(
+        _store(), TemplateNarrator(), records.append, lambda: CLOCK, memory
+    ).run("Add customer cancellation", "run-5")
+    assert answer.status is AnswerStatus.ANSWERED
+    assert answer.open_questions == ()
+    assert [d.answer for d in answer.decisions] == ["at the end of the billing period"]
+    assert answer.text.endswith(
+        "A decision recorded earlier settles this, so I am not asking again:\n"
+        "- Does cancellation take effect immediately, or at the end of the current "
+        "billing period? The intended timing is not specified here. "
+        "Decided: at the end of the billing period (by Shaela, 2026-10-27T16:00:00Z; "
+        "sample_app/subscriptions.py, line 16, in cancel_subscription)"
+    )
+    actions = [(r["action"], r["status"]) for r in records]
+    assert ("recall_decision", "decided") in actions
+    assert "flag_decision" not in [a for a, _ in actions]
+
+
+def test_with_an_empty_memory_the_open_decision_is_still_asked(tmp_path):
+    answer = assemble(
+        _store(), TemplateNarrator(), lambda r: None, lambda: CLOCK, _memory(tmp_path)
+    ).run("Add customer cancellation", "run-6")
+    assert answer.status is AnswerStatus.NEEDS_DECISION
+    assert answer.decisions == ()
 
 
 def test_an_open_decision_stops_the_agent_and_asks_the_owner():

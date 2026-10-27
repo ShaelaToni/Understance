@@ -214,7 +214,11 @@ def test_it_plugs_into_the_narrator_port():
 
 def test_the_model_writes_the_summary_and_the_proof_lines_follow():
     narration, events, _ = _narrate(_observed(GOOD))
-    assert narration == Narration(f"{GOOD}\n{PROOF}", MODEL)
+    assert narration == Narration(
+        "In plain words (written by the model; the proof below is from the code): "
+        f"{GOOD}\n{PROOF}",
+        MODEL,
+    )
     assert events[0]["status"] == "ok"
     assert events[0]["model"] == MODEL
     assert events[0]["output_summary"].startswith("receipt rcpt_req_ce9imi24")

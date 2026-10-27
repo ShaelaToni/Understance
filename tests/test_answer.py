@@ -31,6 +31,7 @@ def test_answer_is_frozen_and_stores_tuples():
     assert answer.findings == (finding,)
     assert answer.blocked == ()
     assert answer.open_questions == ()
+    assert answer.decisions == ()
     with pytest.raises(FrozenInstanceError):
         answer.status = AnswerStatus.NEEDS_INPUT
 

@@ -17,6 +17,7 @@ DEFAULT_MODEL = "meterless/auto"
 MAX_TOKENS = 160
 MAX_SUMMARY_CHARS = 500
 APP_NAME = "understance"
+MODEL_LABEL = "In plain words (written by the model; the proof below is from the code):"
 DOTTED_NAME = re.compile(r"\b[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)+\b")
 FILE_LIKE = re.compile(r"/|\.py\b")
 INSTRUCTIONS = (
@@ -170,7 +171,9 @@ class NightshiftNarrator(Narrator):
             self._event(asked, summary, reply.routed_model, "blocked")
             return proof
         self._event(asked, reply.receipt_line(), reply.routed_model, "ok")
-        return Narration(f"{reply.text}\n{proof.text}", reply.routed_model)
+        return Narration(
+            f"{MODEL_LABEL} {reply.text}\n{proof.text}", reply.routed_model
+        )
 
     def _event(self, asked: str, summary: str, model: str | None, status: str):
         self._log(

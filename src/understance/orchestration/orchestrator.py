@@ -9,10 +9,12 @@ from understance.orchestration.agents import (
     Retrieval,
     Retriever,
     Verdict,
+    decided_text,
     decision_text,
 )
 from understance.orchestration.read_only_fact_store import ReadOnlyFactStore
-from understance.ports.interfaces import FactStore, Narrator
+from understance.orchestration.read_only_memory_store import ReadOnlyMemoryStore
+from understance.ports.interfaces import FactStore, MemoryStore, Narrator
 
 MAX_SEND_BACKS = 2
 TRACE_FIELDS = (
@@ -129,6 +131,22 @@ class Orchestrator:
             model=narration.model,
             retry=send_backs,
         )
+        text = narration.text
+        if verdict.decided:
+            log(
+                "Evaluator",
+                "recall_decision",
+                f"{len(verdict.decided)} recorded decisions in {plan.target}",
+                "; ".join(
+                    f"{d.question.file}, line {d.question.line}"
+                    for d in verdict.decided
+                ),
+                "user",
+                confidence=_confidence(verdict),
+                retry=send_backs,
+                status="decided",
+            )
+            text += "\n\n" + decided_text(verdict.decided)
         questions = verdict.decisions_needed
         if questions:
             log(
@@ -141,28 +159,20 @@ class Orchestrator:
                 retry=send_backs,
                 status="needs_decision",
             )
-            return Answer(
-                run_id,
-                question,
-                AnswerStatus.NEEDS_DECISION,
-                plan.target,
-                retrieval.modules,
-                narration.text + "\n\n" + decision_text(questions),
-                verdict.approved,
-                verdict.blocked,
-                narration.model,
-                questions,
-            )
+            text += "\n\n" + decision_text(questions)
+        status = AnswerStatus.NEEDS_DECISION if questions else AnswerStatus.ANSWERED
         return Answer(
             run_id,
             question,
-            AnswerStatus.ANSWERED,
+            status,
             plan.target,
             retrieval.modules,
-            narration.text,
+            text,
             verdict.approved,
             verdict.blocked,
             narration.model,
+            questions,
+            verdict.decided,
         )
 
     def _loop(self, plan: Plan, log: "_Log") -> tuple[Retrieval, Verdict, int]:
@@ -259,12 +269,14 @@ def assemble(
     narrator: Narrator,
     trace: Callable[[dict], None],
     clock: Callable[[], str],
+    memory: MemoryStore | None = None,
 ) -> Orchestrator:
     facts = ReadOnlyFactStore(store)
+    recall = ReadOnlyMemoryStore(memory) if memory is not None else None
     return Orchestrator(
         Planner(facts),
         Retriever(facts),
-        Evaluator(facts),
+        Evaluator(facts, recall),
         Explainer(narrator),
         trace,
         clock,

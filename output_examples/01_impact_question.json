@@ -1,0 +1,29 @@
+{
+  "run_id": "run-20261027T162404Z-aab02a",
+  "mode": "sample",
+  "status": "answered",
+  "question": "What would changing billing affect?",
+  "target": "sample_app.billing",
+  "affected": [
+    "sample_app.api",
+    "sample_app.main"
+  ],
+  "answer": "Changing sample_app.billing could affect 2 other modules: sample_app.api, sample_app.main.\nThe proof, one import link at a time (2 links):\n- sample_app.api imports sample_app.billing (sample_app/api.py, line 4)\n- sample_app.main imports sample_app.api (sample_app/main.py, line 3)",
+  "findings": [
+    {
+      "summary": "sample_app.api imports sample_app.billing",
+      "file": "sample_app/api.py",
+      "line": 4
+    },
+    {
+      "summary": "sample_app.main imports sample_app.api",
+      "file": "sample_app/main.py",
+      "line": 3
+    }
+  ],
+  "blocked": 0,
+  "open_questions": [],
+  "decisions": [],
+  "model": "template (no model)",
+  "trace_file": "trace-run-20261027T162404Z-aab02a.jsonl"
+}

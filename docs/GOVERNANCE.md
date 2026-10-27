@@ -27,6 +27,8 @@ Source for this starter: the "Agent governance" section of CLAUDE.md. These are 
 
 - Memory is append-only and attributed: every H-MEM action is a ledger entry naming who acted and when; a newer decision supersedes an older one and nothing is deleted (tests/test_hmem_memory.py, test_the_ledger_is_append_only_and_names_who_decided and test_a_newer_decision_replaces_the_older_one_and_nothing_is_deleted). A repo id cannot name a path outside the memory folder (test_a_repo_id_must_be_a_plain_name).
 
+- Agents recall decisions and never record them: the Evaluator holds a ReadOnlyMemoryStore that refuses every write; only the owner's request records a decision (tests/test_orchestrator.py, test_an_agent_can_recall_a_decision_but_never_record_one; tests/test_read_only_memory_store.py). Sample mode never reads .env (tests/test_app.py, test_sample_mode_set_in_the_environment_never_reads_the_env_file). An internal error returns the exception type only, never its text (test_an_unexpected_failure_is_a_structured_error).
+
 ## To be expanded
 - Spec 17: the full role and regulation for each agent.
 - Spec 19: the governance enforcement tests (the step 2.6 GATE in docs/BUILD_ORDER.md).

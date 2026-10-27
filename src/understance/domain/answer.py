@@ -19,26 +19,6 @@ class Narration:
 
 
 @dataclass(frozen=True)
-class Answer:
-    run_id: str
-    question: str
-    status: AnswerStatus
-    target: str | None
-    affected: tuple[str, ...]
-    text: str
-    findings: tuple[Finding, ...]
-    blocked: tuple[Finding, ...]
-    model: str | None
-    open_questions: tuple[OpenQuestion, ...] = ()
-
-    def __post_init__(self):
-        object.__setattr__(self, "affected", tuple(self.affected))
-        object.__setattr__(self, "findings", tuple(self.findings))
-        object.__setattr__(self, "blocked", tuple(self.blocked))
-        object.__setattr__(self, "open_questions", tuple(self.open_questions))
-
-
-@dataclass(frozen=True)
 class Decision:
     """An open question the owner settled: what they chose, who, and when."""
 
@@ -52,3 +32,25 @@ class Decision:
             raise ValueError("a Decision must carry an answer")
         if not self.decided_by.strip():
             raise ValueError("a Decision must name who decided")
+
+
+@dataclass(frozen=True)
+class Answer:
+    run_id: str
+    question: str
+    status: AnswerStatus
+    target: str | None
+    affected: tuple[str, ...]
+    text: str
+    findings: tuple[Finding, ...]
+    blocked: tuple[Finding, ...]
+    model: str | None
+    open_questions: tuple[OpenQuestion, ...] = ()
+    decisions: tuple[Decision, ...] = ()
+
+    def __post_init__(self):
+        object.__setattr__(self, "affected", tuple(self.affected))
+        object.__setattr__(self, "findings", tuple(self.findings))
+        object.__setattr__(self, "blocked", tuple(self.blocked))
+        object.__setattr__(self, "open_questions", tuple(self.open_questions))
+        object.__setattr__(self, "decisions", tuple(self.decisions))
