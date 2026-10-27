@@ -29,29 +29,33 @@ class CsvFactStore(FactStore):
                 writer.writerows(sorted(rows, key=_as_strings))
 
     def load_graph(self) -> DependencyGraph:
-        t = {name: self._read(name) for name in TABLES}
-        history = {r["file"]: r for r in t["git_history.csv"]}
-        modules = tuple(
-            Module(
-                r["module_name"],
-                _defines(t["defines.csv"], r["module_name"]),
-                _questions(t["open_questions.csv"], r["module_name"]),
-                file=_none(r["file"]),
-                last_commit=_none(history.get(r["file"], {}).get("last_commit", "")),
-                last_changed=_none(history.get(r["file"], {}).get("last_changed", "")),
-                tested_by=_tested_by(t["test_map.csv"], r["module_name"]),
-            )
-            for r in t["modules.csv"]
-        )
-        dependencies = tuple(
-            Dependency(r["source"], r["target"], _int(r["line"]), _none(r["file"]))
-            for r in t["dependencies.csv"]
-        )
-        return DependencyGraph(modules, dependencies)
+        return graph_from_tables({name: self._read(name) for name in TABLES})
 
     def _read(self, name: str) -> list[dict[str, str]]:
         with (self.folder / name).open(newline="", encoding="utf-8") as f:
             return list(csv.DictReader(f))
+
+
+def graph_from_tables(t: dict[str, list[dict[str, str]]]) -> DependencyGraph:
+    """Build the graph from rows shaped like TABLES (text values, "" when empty)."""
+    history = {r["file"]: r for r in t["git_history.csv"]}
+    modules = tuple(
+        Module(
+            r["module_name"],
+            _defines(t["defines.csv"], r["module_name"]),
+            _questions(t["open_questions.csv"], r["module_name"]),
+            file=_none(r["file"]),
+            last_commit=_none(history.get(r["file"], {}).get("last_commit", "")),
+            last_changed=_none(history.get(r["file"], {}).get("last_changed", "")),
+            tested_by=_tested_by(t["test_map.csv"], r["module_name"]),
+        )
+        for r in t["modules.csv"]
+    )
+    dependencies = tuple(
+        Dependency(r["source"], r["target"], _int(r["line"]), _none(r["file"]))
+        for r in t["dependencies.csv"]
+    )
+    return DependencyGraph(modules, dependencies)
 
 
 def _rows(graph: DependencyGraph) -> dict[str, list[tuple]]:

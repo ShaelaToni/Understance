@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 3 (real end-to-end through the sponsors). Phases 0 and 1 complete; Phase 2 complete except 2.6 and 2.6a (governance tests and the capabilities manifest), deferred for time.
-- **Step:** Phase 3.1 done: the facts are written as CSV files (code facts, git history, test map), committed in facts/.
-- **Next:** Register facts/ in Zetaris as three sources and build the Unified Semantic Layer (Shaela, in the Zetaris UI), then 3.2 the Zetaris FactStore adapter.
+- **Step:** Phase 3.2 code done: the agents read the facts through Zetaris (two USL tables and three source tables) after its data quality rule passes, with a logged fallback to facts/ when Zetaris is unreachable. The live check is Shaela's.
+- **Next:** Shaela runs scripts/check_zetaris.py against her Zetaris; then 3.3, the Nightshift narrator.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 134 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 3 answer, 3 template narrator, 20 agents, 11 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store)
+- Tests: 161 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 3 answer, 3 template narrator, 20 agents, 11 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -185,3 +185,9 @@
 - RED: the new tests failed to import the new adapters; GREEN: full suite 134 passed. Planted violation: dropping the git guard made the command test fail; restored and green again.
 - facts/ written by scripts/export_facts.py from sample_app and committed.
 - Snippet (gate part 4): Understance now writes what it knows as six small files, the code map, the last change to each file, and which tests cover which module, ready for Zetaris to join them into one view, and usable offline when Zetaris is not there.
+
+### Oct 27, Phase 3.2 the facts through Zetaris
+- Directive (Shaela): the data quality rule should run itself; it runs on every read and stops on broken links. A native Zetaris rule was attempted three ways and was not reachable in this version (see DECISIONS); the rule now runs in Zetaris on every agent run.
+- RED: tests/test_zetaris_fact_store.py and tests/test_fallback_fact_store.py failed to import the new adapters. GREEN: full suite 161 passed. Planted violation: skipping the rule made test_the_data_quality_rule_runs_first_and_is_logged fail; restored and green again.
+- Live check: scripts/check_zetaris.py, run by Shaela after this commit (it reads .env); result recorded when observed.
+- Snippet (gate part 4): before the agents answer anything, Understance now asks Zetaris to prove the facts hang together: every import link must point at a module that exists. Then it reads the joined view Zetaris built from three sources. If Zetaris is down, it says so and answers from the offline copy; if the facts are broken, it stops instead of guessing.

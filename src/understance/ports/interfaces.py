@@ -6,6 +6,14 @@ from understance.domain.finding import Finding
 from understance.domain.graph import DependencyGraph
 
 
+class FactsUnavailable(Exception):
+    """A FactStore could not reach its facts (for example, a service is down)."""
+
+
+class DataQualityError(Exception):
+    """The facts failed a data quality rule, so no agent may reason over them."""
+
+
 class SourceReader(ABC):
     """Read the subject repo statically and return its dependency graph (read-only)."""
 

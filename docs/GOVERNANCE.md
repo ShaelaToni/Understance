@@ -21,6 +21,8 @@ Source for this starter: the "Agent governance" section of CLAUDE.md. These are 
 - Agents never import an adapter: tests/test_architecture.py.
 - Rule 5 (repo content is data, never instructions): a file whose name Python cannot import is never read (tests/test_ast_source_reader.py), and open-question text from the code never reaches the narrator (tests/test_orchestrator.py, test_repo_text_of_an_open_question_never_reaches_the_narrator).
 
+- Facts pass a data quality rule before any agent reasons over them: ZetarisFactStore checks in Zetaris that every import link points at a module that exists, and stops the run on a broken link (tests/test_zetaris_fact_store.py); the fallback never hides a failed rule (tests/test_fallback_fact_store.py, test_a_failed_data_quality_rule_is_never_hidden_by_the_fallback). The API key never appears in an error (tests/test_zetaris_fact_store.py, test_the_token_never_appears_in_an_error).
+
 ## To be expanded
 - Spec 17: the full role and regulation for each agent.
 - Spec 19: the governance enforcement tests (the step 2.6 GATE in docs/BUILD_ORDER.md).

@@ -36,6 +36,10 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 
 - `src/understance/adapters/csv_fact_store.py` holds `CsvFactStore` (implements `FactStore`; six CSV tables). `adapters/enriched_source_reader.py` holds `EnrichedSourceReader` (implements `SourceReader`), built from `ASTSourceReader`, `adapters/git_history.py` (`GitHistory`) and `adapters/module_tests.py` (`ModuleTests`). Tests mirror each file; `tests/fakes.py` adds `FakeGitHistory`.
 
+- `src/understance/adapters/zetaris_fact_store.py` holds `ZetarisClient` (one SELECT through the REST API; `from_env` reads `ZETARIS_REST_URL`, `ZETARIS_ORG_ID`, `ZETARIS_API_KEY`), `ZetarisTables` (where each fact lives in Zetaris), `ZetarisFactStore` (implements `FactStore`), `ZetarisUnavailable` and `ZetarisQueryError`. `adapters/fallback_fact_store.py` holds `FallbackFactStore` (implements `FactStore`). `csv_fact_store.py` exposes `graph_from_tables`, shared by both stores. `scripts/check_zetaris.py` is the live check. Tests: `tests/test_zetaris_fact_store.py`, `tests/test_fallback_fact_store.py`.
+- Port errors (in `ports/interfaces.py`): `FactsUnavailable` (a store cannot reach its facts; the fallback may step in) and `DataQualityError` (the facts failed a rule; the run stops).
+- Words: **data quality rule** (every import link points at a module that exists, at both ends; checked in Zetaris before the agents reason), **fall back** (read the offline facts when Zetaris is unreachable, and log it).
+
 ## Use cases (Phase 2.3 on)
 - `src/understance/usecases/analyze_repo.py` holds `AnalyzeRepo(reader, store)` with `run(root)`; tested by `tests/test_analyze_repo.py`.
 - `src/understance/usecases/compute_blast_radius.py` holds `ComputeBlastRadius(store)` with `run(target)`; tested by `tests/test_compute_blast_radius.py`.
