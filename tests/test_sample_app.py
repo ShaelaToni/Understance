@@ -9,6 +9,7 @@ from sample_app_truth import (
     EXPECTED_DEPENDENCIES,
     EXPECTED_IMPORT_LINES,
     EXPECTED_MODULES,
+    EXPECTED_OPEN_QUESTIONS,
     EXPECTED_ORPHANS,
     EXPECTED_UNTESTED,
 )
@@ -115,3 +116,11 @@ def test_truth_blast_radius_follows_the_truth_edges():
     for target, expected in EXPECTED_BLAST_RADIUS.items():
         assert _reach(target, reverse) == expected["dependents"]
         assert _reach(target, EXPECTED_DEPENDENCIES) == expected["dependencies"]
+
+
+def test_truth_open_questions_point_at_ambiguous_comments():
+    for module, questions in EXPECTED_OPEN_QUESTIONS.items():
+        assert module in EXPECTED_MODULES
+        for file, line, _ in questions:
+            text = (SAMPLE_APP.parent / file).read_text(encoding="utf-8")
+            assert text.splitlines()[line - 1].strip().startswith("# AMBIGUOUS:")

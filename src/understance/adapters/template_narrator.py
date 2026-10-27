@@ -12,7 +12,7 @@ class TemplateNarrator(Narrator):
         if not findings:
             text = "No other module imports this one, so no import links lead into it."
             return Narration(text, TEMPLATE_MODEL)
-        lines = [f"{len(findings)} import links lead into this module:"]
+        lines = [f"The proof, one import link at a time ({len(findings)} links):"]
         lines.extend(f"- {f.summary} ({_location(f)})" for f in findings)
         return Narration("\n".join(lines), TEMPLATE_MODEL)
 

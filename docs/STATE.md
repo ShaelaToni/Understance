@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 2 (use cases with fakes). Phases 0 and 1 COMPLETE (Oct 26).
-- **Step:** Phase 2.5 done: four agents answer a change question from the facts, the Evaluator sends the Planner back when the answer is not whole, unsupported claims are blocked, and every step is traced.
-- **Next:** Phase 2.5b: concept words and the policy stop-and-ask; then the Zetaris step.
+- **Step:** Phase 2.5b done: the agents understand concept words and stop to ask when a change depends on a decision the code leaves open.
+- **Next:** Phase 3: the Zetaris step (the facts as three sources, the Unified Semantic Layer and its data quality rule), then Nightshift and H-MEM.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 104 pass (15 graph, 10 finding, 8 ports, 6 architecture, 10 sample_app, 18 ast reader, 3 analyze repo, 5 blast radius, 3 answer, 3 template narrator, 13 agents, 8 orchestrator, 2 read-only fact store)
+- Tests: 119 pass (16 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 21 ast reader, 3 analyze repo, 5 blast radius, 3 answer, 3 template narrator, 20 agents, 11 orchestrator, 2 read-only fact store)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -175,3 +175,7 @@
 - RED: the new tests failed to import the agents, the orchestrator and the answer types. GREEN: full suite 104 passed. Planted violation: handing the agents the raw store instead of ReadOnlyFactStore made the least-privilege test fail; restored and green again.
 - Trace fields now: timestamp, run_id, agent_name, action, input_summary, output_summary, target_agent, model, confidence, retry_count, status.
 - Snippet (gate part 4): ask "what would changing subscriptions affect?" and four agents work it out. The Planner looks at direct importers first; the Evaluator notices main also leads in and sends it back; the widened answer names 5 modules with the file and line for each link; an invented claim is blocked, never explained; and every step is written to the log.
+
+### Oct 27, Phase 2.5b concept words and the policy stop-and-ask
+- RED: the new tests failed (no defines, no open questions, no needs_decision). GREEN: full suite 119 passed. Planted violation: never flagging the decision made the stop-and-ask tests fail; restored and green again.
+- Snippet (gate part 4): say "add customer cancellation" and Understance works out that subscriptions owns cancellation (it defines cancel_subscription), shows the 5 modules a change would reach with the proof for each link, then stops: the code does not say whether cancellation takes effect immediately or at the end of the billing period, so it asks you instead of guessing.

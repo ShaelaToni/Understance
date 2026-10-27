@@ -1,13 +1,18 @@
 import ast
+import io
+import tokenize
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from understance.domain.graph import Dependency, DependencyGraph, Module
+from understance.domain.graph import Dependency, DependencyGraph, Module, OpenQuestion
 from understance.ports.interfaces import SourceReader
 
 EXCLUDED_REASON = "test evidence, not graph modules"
 NOT_REACHABLE = "dynamic imports, reflection, generated code, other languages"
 DYNAMIC_IMPORT_CALLS = {"import_module", "__import__"}
+OPEN_QUESTION_MARK = "AMBIGUOUS:"
+MAX_QUESTION_CHARS = 300
+DEFINITIONS = (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
 
 
 @dataclass
@@ -15,6 +20,7 @@ class _Scan:
     trees: dict[str, tuple[str, ast.Module]] = field(default_factory=dict)
     excluded: list[str] = field(default_factory=list)
     skipped: list[str] = field(default_factory=list)
+    questions: dict[str, tuple[OpenQuestion, ...]] = field(default_factory=dict)
 
 
 class ASTSourceReader(SourceReader):
@@ -32,7 +38,10 @@ class ASTSourceReader(SourceReader):
                 if target in names and target != name:
                     lines[(name, target)] = min(line, lines.get((name, target), line))
         return DependencyGraph(
-            modules=tuple(Module(n) for n in sorted(names)),
+            modules=tuple(
+                Module(n, _defines(scan.trees[n][1]), scan.questions.get(n, ()))
+                for n in sorted(names)
+            ),
             dependencies=tuple(
                 Dependency(source, target, line, scan.trees[source][0])
                 for (source, target), line in sorted(lines.items())
@@ -75,12 +84,15 @@ class ASTSourceReader(SourceReader):
         if path.stat().st_size > self.max_file_bytes:
             scan.skipped.append(f"{rel} (over size limit)")
             return
+        source = path.read_bytes()
         try:
-            tree = ast.parse(path.read_bytes(), filename=rel)
+            tree = ast.parse(source, filename=rel)
         except (SyntaxError, ValueError):
             scan.skipped.append(f"{rel} (could not be parsed)")
             return
-        scan.trees[rel.removesuffix(".py").replace("/", ".")] = (rel, tree)
+        name = rel.removesuffix(".py").replace("/", ".")
+        scan.trees[name] = (rel, tree)
+        scan.questions[name] = _open_questions(source, rel, tree)
 
 
 def _import_targets(tree: ast.Module, name: str, modules: set[str]):
@@ -130,3 +142,53 @@ def _called_name(func: ast.expr) -> str | None:
 
 def _listing(items: list[str]) -> str:
     return ", ".join(sorted(items)) or "none"
+
+
+def _defines(tree: ast.Module) -> tuple[str, ...]:
+    return tuple(sorted(n.name for n in tree.body if isinstance(n, DEFINITIONS)))
+
+
+def _open_questions(
+    source: bytes, rel: str, tree: ast.Module
+) -> tuple[OpenQuestion, ...]:
+    groups: list[tuple[int, list[str]]] = []
+    last = 0
+    for line, text, whole_line in _comments(source):
+        if text.startswith(OPEN_QUESTION_MARK):
+            groups.append((line, [text.removeprefix(OPEN_QUESTION_MARK)]))
+            last = line
+        elif groups and whole_line and line == last + 1:
+            groups[-1][1].append(text)
+            last = line
+    return tuple(
+        OpenQuestion(rel, line, _question_text(parts), _enclosing(tree, line))
+        for line, parts in groups
+    )
+
+
+def _comments(source: bytes) -> list[tuple[int, str, bool]]:
+    try:
+        tokens = list(tokenize.tokenize(io.BytesIO(source).readline))
+    except (tokenize.TokenError, SyntaxError):
+        return []
+    return [
+        (t.start[0], t.string.lstrip("#").strip(), t.line.lstrip().startswith("#"))
+        for t in tokens
+        if t.type == tokenize.COMMENT
+    ]
+
+
+def _question_text(parts: list[str]) -> str:
+    cleaned = ("".join(c for c in part if c.isprintable()).strip() for part in parts)
+    return " ".join(part for part in cleaned if part)[:MAX_QUESTION_CHARS]
+
+
+def _enclosing(tree: ast.Module, line: int) -> str | None:
+    return next(
+        (
+            n.name
+            for n in tree.body
+            if isinstance(n, DEFINITIONS) and n.lineno <= line <= n.end_lineno
+        ),
+        None,
+    )

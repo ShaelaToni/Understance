@@ -63,7 +63,7 @@ def _orchestrator(retriever_class, records):
 
 def test_evaluator_sends_the_planner_back_and_the_trace_shows_the_loop():
     answer, records = _run(QUESTION)
-    assert answer.status is AnswerStatus.ANSWERED
+    assert answer.status is AnswerStatus.NEEDS_DECISION
     assert answer.run_id == "run-1"
     assert answer.target == "sample_app.subscriptions"
     assert answer.affected == (
@@ -82,8 +82,9 @@ def test_evaluator_sends_the_planner_back_and_the_trace_shows_the_loop():
         ("Retriever", "retrieve", "Evaluator", "ok"),
         ("Evaluator", "evaluate", "Explainer", "approved"),
         ("Explainer", "explain", "user", "ok"),
+        ("Evaluator", "flag_decision", "user", "needs_decision"),
     ]
-    assert [r["retry_count"] for r in records] == [0, 0, 0, 1, 1, 1, 1]
+    assert [r["retry_count"] for r in records] == [0, 0, 0, 1, 1, 1, 1, 1]
     assert "sample_app.main" in records[2]["output_summary"]
 
 
@@ -94,7 +95,8 @@ def test_answer_leads_with_the_affected_modules_and_cites_file_and_line():
     )
     assert "(sample_app/access.py, line 14)" in answer.text
     assert answer.model == "template (no model)"
-    assert records[-1]["model"] == "template (no model)"
+    explain = next(r for r in records if r["action"] == "explain")
+    assert explain["model"] == "template (no model)"
 
 
 def test_a_module_nothing_imports_is_answered_without_a_send_back_or_a_model():
@@ -123,13 +125,18 @@ class _InventingRetriever(Retriever):
             FindingKind.OBSERVED,
             [Evidence("sample_app/main.py", 3, 3)],
         )
-        return Retrieval(found.plan, found.modules, found.findings + (invented,))
+        return Retrieval(
+            found.plan,
+            found.modules,
+            found.findings + (invented,),
+            found.open_questions,
+        )
 
 
 def test_a_planted_unsupported_claim_is_blocked_and_never_explained():
     records = []
     answer = _orchestrator(_InventingRetriever, records).run(QUESTION, "run-2")
-    assert answer.status is AnswerStatus.ANSWERED
+    assert answer.status is AnswerStatus.NEEDS_DECISION
     assert [f.summary for f in answer.blocked] == [
         "sample_app.main imports sample_app.billing"
     ]
@@ -173,3 +180,52 @@ def test_each_agent_holds_only_the_ports_its_role_needs():
         assert agent.facts is not store
     assert vars(orchestrator.explainer).keys() == {"narrator"}
     assert isinstance(orchestrator.explainer.narrator, Narrator)
+
+
+def test_an_open_decision_stops_the_agent_and_asks_the_owner():
+    answer, records = _run("Add customer cancellation")
+    assert answer.status is AnswerStatus.NEEDS_DECISION
+    assert answer.target == "sample_app.subscriptions"
+    assert len(answer.affected) == 5
+    assert [(q.file, q.line) for q in answer.open_questions] == [
+        ("sample_app/subscriptions.py", 16)
+    ]
+    assert answer.text.endswith(
+        "Before you change this, a decision is open that the code does not settle:\n"
+        "- Does cancellation take effect immediately, or at the end of the current "
+        "billing period? The intended timing is not specified here. "
+        "(sample_app/subscriptions.py, line 16, in cancel_subscription)\n"
+        "Which should it be? Tell me, and I will record your decision."
+    )
+    plan = next(r for r in records if r["action"] == "plan")
+    assert plan["output_summary"] == (
+        "sample_app.subscriptions, direct scope (matched: it defines "
+        "cancel_subscription)"
+    )
+    assert records[-1]["output_summary"] == "sample_app/subscriptions.py, line 16"
+
+
+def test_a_module_with_no_open_question_is_simply_answered():
+    answer, records = _run("What would changing billing affect?")
+    assert answer.status is AnswerStatus.ANSWERED
+    assert answer.open_questions == ()
+    assert "flag_decision" not in [r["action"] for r in records]
+
+
+class _SpyNarrator(TemplateNarrator):
+    def __init__(self):
+        self.seen = []
+
+    def narrate(self, findings):
+        self.seen.append(findings)
+        return super().narrate(findings)
+
+
+def test_repo_text_of_an_open_question_never_reaches_the_narrator():
+    spy = _SpyNarrator()
+    answer = assemble(_store(), spy, lambda r: None, lambda: CLOCK).run(
+        "Add customer cancellation", "run-4"
+    )
+    assert "billing period" in answer.text
+    sent = " ".join(f.summary for findings in spy.seen for f in findings)
+    assert "billing period" not in sent

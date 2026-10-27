@@ -4,8 +4,20 @@ from understance.domain.finding import Finding
 
 
 @dataclass(frozen=True)
+class OpenQuestion:
+    """A decision the code itself marks as unsettled (an AMBIGUOUS: comment)."""
+
+    file: str
+    line: int
+    text: str
+    symbol: str | None = None
+
+
+@dataclass(frozen=True)
 class Module:
     name: str
+    defines: tuple[str, ...] = field(default=(), compare=False)
+    open_questions: tuple[OpenQuestion, ...] = field(default=(), compare=False)
 
 
 @dataclass(frozen=True)

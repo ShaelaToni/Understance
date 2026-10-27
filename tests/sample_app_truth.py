@@ -84,3 +84,11 @@ EXPECTED_BLAST_RADIUS = {
         ),
     },
 }
+
+# The one decision the code marks as unsettled (an AMBIGUOUS: comment), the demo's
+# stop-and-ask: (file, line, enclosing function).
+EXPECTED_OPEN_QUESTIONS = {
+    "sample_app.subscriptions": (
+        ("sample_app/subscriptions.py", 16, "cancel_subscription"),
+    ),
+}

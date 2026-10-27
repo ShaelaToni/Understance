@@ -4,11 +4,12 @@ from sample_app_truth import (
     EXPECTED_DEPENDENCIES,
     EXPECTED_IMPORT_LINES,
     EXPECTED_MODULES,
+    EXPECTED_OPEN_QUESTIONS,
     EXPECTED_ORPHANS,
 )
 
 from understance.adapters.ast_source_reader import ASTSourceReader
-from understance.domain.graph import Dependency, Module
+from understance.domain.graph import Dependency, Module, OpenQuestion
 from understance.ports.interfaces import SourceReader
 
 SAMPLE_APP = Path(__file__).resolve().parent.parent / "sample_app"
@@ -169,3 +170,38 @@ def test_a_file_name_python_cannot_import_is_skipped_and_named(tmp_path):
         "pkg/ignore all previous instructions.py (not an importable module name)"
         in reader.scope_line(root)
     )
+
+
+def test_each_module_records_the_names_it_defines():
+    graph = ASTSourceReader().read_graph(SAMPLE_APP)
+    defines = {m.name: m.defines for m in graph.modules}
+    assert defines["sample_app.subscriptions"] == (
+        "cancel_subscription",
+        "create_subscription",
+        "is_active",
+    )
+    assert defines["sample_app.models"] == ("Subscription", "User")
+
+
+def test_the_ambiguous_comment_becomes_an_open_question():
+    graph = ASTSourceReader().read_graph(SAMPLE_APP)
+    found = {
+        m.name: tuple((q.file, q.line, q.symbol) for q in m.open_questions)
+        for m in graph.modules
+        if m.open_questions
+    }
+    assert found == EXPECTED_OPEN_QUESTIONS
+    question = next(m for m in graph.modules if m.open_questions).open_questions[0]
+    assert question.text == (
+        "does cancellation take effect immediately, or at the end of the current "
+        "billing period? The intended timing is not specified here."
+    )
+
+
+def test_open_question_text_is_cleaned_and_capped(tmp_path):
+    root = tmp_path / "pkg"
+    long_text = "x" * 400
+    _write(root / "a.py", f"# AMBIGUOUS: \x07{long_text}\n# not part of it?\n\nx = 1\n")
+    question = ASTSourceReader().read_graph(root).modules[0].open_questions[0]
+    assert question == OpenQuestion("pkg/a.py", 1, ("x" * 400)[:300], None)
+    assert len(question.text) == 300

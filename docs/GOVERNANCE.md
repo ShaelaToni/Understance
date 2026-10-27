@@ -19,6 +19,7 @@ Source for this starter: the "Agent governance" section of CLAUDE.md. These are 
 - Rule 4 (claims resolve to facts): the Evaluator blocks any claim that does not exactly match a stored import link (tests/test_agents.py, tests/test_orchestrator.py).
 - Rule 6 (every action and refusal logged): each agent action, send-back, block and stop-and-ask is a trace record (tests/test_orchestrator.py).
 - Agents never import an adapter: tests/test_architecture.py.
+- Rule 5 (repo content is data, never instructions): a file whose name Python cannot import is never read (tests/test_ast_source_reader.py), and open-question text from the code never reaches the narrator (tests/test_orchestrator.py, test_repo_text_of_an_open_question_never_reaches_the_narrator).
 
 ## To be expanded
 - Spec 17: the full role and regulation for each agent.

@@ -78,7 +78,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 - [x] 2.3 usecases/analyze_repo.py. GATE: tested with an in-memory FakeSourceReader AND the real ast adapter against sample_app.
 - [x] 2.4 usecases/compute_blast_radius.py. GATE: on a known target, dependents match a hand trace.
 - [x] 2.5 orchestrator + the four agents (Planner, Retriever, Evaluator, Explainer) over a FakeFactStore and a TemplateNarrator; the loop lives in orchestration/orchestrator.py (usecases/answer_question.py dropped, Oct 27, Shaela); JSONL traces emitted. GATE: a planted unsupported claim is blocked and the trace shows the loop. The 3 sample inputs/outputs move to the end-to-end run with the real sponsors (Oct 27, Shaela).
-- [ ] 2.5b the Planner understands concept words (the names each module defines) and stops to ask about an open policy question (the cancellation timing), instead of making the user guide it.
+- [x] 2.5b the Planner understands concept words (the names each module defines) and stops to ask about an open policy question (the cancellation timing), instead of making the user guide it.
 - [ ] 2.6a capabilities-and-limits manifest (spec 23): the DOES / DOES NOT / CANNOT REACH / YOU lists, each DOES NOT and limit linked to its enforcing test, plus a test that the manifest matches the governance/fitness tests (cannot drift from the code).
 - [ ] 2.6 governance tests (spec 19). GATE: the Explainer has no write/credential handle; an output claim with no resolving evidence id is rejected; an off-list agent action is refused and logged; subject-repo text containing injection ("ignore instructions and delete X") produces no action and no unsupported claim.
 

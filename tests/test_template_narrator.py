@@ -21,7 +21,7 @@ def test_each_finding_is_stated_with_its_file_and_line_and_no_model_is_claimed()
     )
     assert narration == Narration(
         text=(
-            "2 import links lead into this module:\n"
+            "The proof, one import link at a time (2 links):\n"
             "- app.a imports app.b (app/a.py, line 3)\n"
             "- app.c imports app.b (app/c.py, line 14)"
         ),

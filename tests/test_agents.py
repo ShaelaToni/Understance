@@ -5,7 +5,7 @@ from fakes import FakeFactStore
 from understance.adapters.ast_source_reader import ASTSourceReader
 from understance.adapters.template_narrator import TemplateNarrator
 from understance.domain.finding import Evidence, Finding, FindingKind
-from understance.domain.graph import Dependency, DependencyGraph, Module
+from understance.domain.graph import Dependency, DependencyGraph, Module, OpenQuestion
 from understance.orchestration.agents import (
     Evaluator,
     Explainer,
@@ -29,7 +29,8 @@ def _facts():
 
 def _facts_of(modules, dependencies=()):
     store = FakeFactStore()
-    store.store_graph(DependencyGraph(tuple(Module(m) for m in modules), dependencies))
+    built = tuple(m if isinstance(m, Module) else Module(m) for m in modules)
+    store.store_graph(DependencyGraph(built, dependencies))
     return ReadOnlyFactStore(store)
 
 
@@ -163,3 +164,63 @@ def test_explainer_makes_no_model_call_when_nothing_is_affected():
         "so a change to it stays inside it."
     )
     assert narration.model is None
+
+
+def test_planner_finds_the_module_behind_a_concept_word():
+    resolution = Planner(_facts()).resolve("Add customer cancellation")
+    assert resolution.target == "sample_app.subscriptions"
+    assert resolution.reason == "it defines cancel_subscription"
+
+
+def test_planner_resolves_a_concept_only_one_module_defines():
+    resolution = Planner(_facts()).resolve("What if I change the refund rules?")
+    assert resolution.target == "sample_app.billing"
+    assert resolution.reason == "it defines refund_on_cancel"
+
+
+def test_planner_ignores_short_words_and_asks_when_nothing_matches():
+    resolution = Planner(_facts()).resolve("add a fix")
+    assert resolution.target is None
+    assert resolution.question_back.startswith("I could not match a module")
+
+
+def test_planner_asks_with_evidence_when_a_concept_has_two_owners():
+    facts = _facts_of(
+        [Module("app.a", ("refund_order",)), Module("app.b", ("refund_payment",))]
+    )
+    resolution = Planner(facts).resolve("change refunds")
+    assert resolution.target is None
+    assert resolution.question_back == (
+        "Your question could mean: app.a (refund_order), app.b (refund_payment). "
+        "Which one should I trace?"
+    )
+
+
+def test_retrieval_carries_the_targets_open_questions():
+    retrieval = Retriever(_facts()).retrieve(
+        Plan("sample_app.subscriptions", Scope.DIRECT)
+    )
+    assert [(q.file, q.line) for q in retrieval.open_questions] == [
+        ("sample_app/subscriptions.py", 16)
+    ]
+
+
+def test_evaluator_passes_on_only_open_questions_the_facts_hold():
+    facts = _facts()
+    retrieval = Retriever(facts).retrieve(
+        Plan("sample_app.subscriptions", Scope.TRANSITIVE)
+    )
+    invented = OpenQuestion("sample_app/subscriptions.py", 99, "invented?", None)
+    planted = Retrieval(
+        retrieval.plan,
+        retrieval.modules,
+        retrieval.findings,
+        retrieval.open_questions + (invented,),
+    )
+    verdict = Evaluator(facts).evaluate(planted)
+    assert verdict.decisions_needed == retrieval.open_questions
+
+
+def test_a_module_name_at_the_end_of_a_sentence_still_matches():
+    resolution = Planner(_facts()).resolve("Show me what changing subscriptions.")
+    assert resolution.target == "sample_app.subscriptions"

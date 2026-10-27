@@ -9,6 +9,7 @@ from understance.orchestration.agents import (
     Retrieval,
     Retriever,
     Verdict,
+    decision_text,
 )
 from understance.orchestration.read_only_fact_store import ReadOnlyFactStore
 from understance.ports.interfaces import FactStore, Narrator
@@ -72,7 +73,13 @@ class Orchestrator:
                 None,
             )
         plan = self.planner.plan(resolution.target)
-        log("Planner", "plan", question, _plan_summary(plan), "Retriever")
+        log(
+            "Planner",
+            "plan",
+            question,
+            f"{_plan_summary(plan)} (matched: {resolution.reason})",
+            "Retriever",
+        )
         retrieval, verdict, send_backs = self._loop(plan, log)
         if not verdict.complete:
             text = (
@@ -122,6 +129,30 @@ class Orchestrator:
             model=narration.model,
             retry=send_backs,
         )
+        questions = verdict.decisions_needed
+        if questions:
+            log(
+                "Evaluator",
+                "flag_decision",
+                f"{len(questions)} open questions in {plan.target}",
+                "; ".join(f"{q.file}, line {q.line}" for q in questions),
+                "user",
+                confidence=_confidence(verdict),
+                retry=send_backs,
+                status="needs_decision",
+            )
+            return Answer(
+                run_id,
+                question,
+                AnswerStatus.NEEDS_DECISION,
+                plan.target,
+                retrieval.modules,
+                narration.text + "\n\n" + decision_text(questions),
+                verdict.approved,
+                verdict.blocked,
+                narration.model,
+                questions,
+            )
         return Answer(
             run_id,
             question,

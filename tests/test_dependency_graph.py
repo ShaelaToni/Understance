@@ -3,7 +3,13 @@ from dataclasses import FrozenInstanceError
 import pytest
 
 from understance.domain.finding import Evidence, Finding, FindingKind
-from understance.domain.graph import BlastRadius, Dependency, DependencyGraph, Module
+from understance.domain.graph import (
+    BlastRadius,
+    Dependency,
+    DependencyGraph,
+    Module,
+    OpenQuestion,
+)
 
 
 def graph(module_names, edges):
@@ -116,3 +122,12 @@ def test_blast_radius_is_frozen_and_stores_tuples():
     assert radius.findings == (finding,)
     with pytest.raises(FrozenInstanceError):
         radius.target = "c"
+
+
+def test_a_module_records_what_it_defines_and_its_open_questions():
+    question = OpenQuestion("app/a.py", 4, "immediately or later?", "cancel")
+    module = Module("app.a", ("cancel",), (question,))
+    assert module.defines == ("cancel",)
+    assert module.open_questions == (question,)
+    assert module == Module("app.a")
+    assert OpenQuestion("app/a.py", 4, "x").symbol is None

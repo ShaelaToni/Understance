@@ -4,10 +4,12 @@ from enum import Enum
 
 from understance.domain.answer import Narration
 from understance.domain.finding import Finding
+from understance.domain.graph import Module, OpenQuestion
 from understance.ports.interfaces import FactStore, Narrator
 from understance.usecases.compute_blast_radius import ComputeBlastRadius, edge_finding
 
 MAX_LISTED = 20
+MIN_STEM = 4
 WORD = re.compile(r"[a-z_][a-z0-9_.]*")
 
 
@@ -20,6 +22,7 @@ class Scope(Enum):
 class Resolution:
     target: str | None
     question_back: str | None
+    reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -33,6 +36,7 @@ class Retrieval:
     plan: Plan
     modules: tuple[str, ...]
     findings: tuple[Finding, ...]
+    open_questions: tuple[OpenQuestion, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -40,6 +44,7 @@ class Verdict:
     approved: tuple[Finding, ...]
     blocked: tuple[Finding, ...]
     missing: tuple[str, ...]
+    decisions_needed: tuple[OpenQuestion, ...] = ()
 
     @property
     def complete(self) -> bool:
@@ -53,19 +58,23 @@ class Planner:
         self.facts = facts
 
     def resolve(self, question: str) -> Resolution:
-        words = set(WORD.findall(question.lower()))
-        names = sorted(m.name for m in self.facts.load_graph().modules)
+        words = {w.strip(".") for w in WORD.findall(question.lower())}
+        modules = self.facts.load_graph().modules
+        names = sorted(m.name for m in modules)
         matches = [
             n for n in names if n.lower() in words or n.split(".")[-1].lower() in words
         ]
         if len(matches) == 1:
-            return Resolution(matches[0], None)
+            return Resolution(matches[0], None, "the question names this module")
         if matches:
             return Resolution(
                 None,
                 f"Your question names more than one module: {_listing(matches)}. "
                 "Which one should I trace?",
             )
+        concept = _resolve_concept(words, modules)
+        if concept is not None:
+            return concept
         return Resolution(
             None,
             "I could not match a module in your question. Which one do you mean? "
@@ -86,19 +95,22 @@ class Retriever:
         self.facts = facts
 
     def retrieve(self, plan: Plan) -> Retrieval:
+        graph = self.facts.load_graph()
+        questions = _open_questions_of(graph.modules, plan.target)
         if plan.scope is Scope.TRANSITIVE:
             radius = ComputeBlastRadius(self.facts).run(plan.target)
-            return Retrieval(plan, radius.dependents, radius.findings)
+            return Retrieval(plan, radius.dependents, radius.findings, questions)
         edges = sorted(
             (
                 d
-                for d in self.facts.load_graph().dependencies
+                for d in graph.dependencies
                 if d.target == plan.target and d.file is not None
             ),
             key=lambda d: d.source,
         )
         modules = tuple(sorted({d.source for d in edges}))
-        return Retrieval(plan, modules, tuple(edge_finding(d) for d in edges))
+        findings = tuple(edge_finding(d) for d in edges)
+        return Retrieval(plan, modules, findings, questions)
 
 
 class Evaluator:
@@ -108,7 +120,8 @@ class Evaluator:
         self.facts = facts
 
     def evaluate(self, retrieval: Retrieval) -> Verdict:
-        dependencies = self.facts.load_graph().dependencies
+        graph = self.facts.load_graph()
+        dependencies = graph.dependencies
         supported = {edge_finding(d) for d in dependencies if d.file is not None}
         approved = tuple(f for f in retrieval.findings if f in supported)
         blocked = tuple(f for f in retrieval.findings if f not in supported)
@@ -116,7 +129,9 @@ class Evaluator:
         missing = sorted(
             {d.source for d in dependencies if d.target in covered} - covered
         )
-        return Verdict(approved, blocked, tuple(missing))
+        held = _open_questions_of(graph.modules, retrieval.plan.target)
+        decisions = tuple(q for q in retrieval.open_questions if q in held)
+        return Verdict(approved, blocked, tuple(missing), decisions)
 
 
 class Explainer:
@@ -144,6 +159,64 @@ class Explainer:
             )
         narration = self.narrator.narrate(findings)
         return Narration(headline + "\n" + narration.text, narration.model)
+
+
+def decision_text(questions: tuple[OpenQuestion, ...]) -> str:
+    lines = [
+        "Before you change this, a decision is open that the code does not settle:"
+    ]
+    for q in questions:
+        where = f"{q.file}, line {q.line}"
+        if q.symbol is not None:
+            where += f", in {q.symbol}"
+        lines.append(f"- {q.text[:1].upper()}{q.text[1:]} ({where})")
+    lines.append("Which should it be? Tell me, and I will record your decision.")
+    return "\n".join(lines)
+
+
+def _open_questions_of(modules, target: str) -> tuple[OpenQuestion, ...]:
+    return next((m.open_questions for m in modules if m.name == target), ())
+
+
+def _resolve_concept(words: set[str], modules) -> Resolution | None:
+    found = {}
+    for module in modules:
+        hits = _concept_hits(words, module)
+        if hits:
+            found[module.name] = hits
+    if not found:
+        return None
+    leading = [name for name, hits in found.items() if any(hits.values())]
+    if len(found) == 1 or len(leading) == 1:
+        target = next(iter(found)) if len(found) == 1 else leading[0]
+        return Resolution(
+            target, None, f"it defines {', '.join(sorted(found[target]))}"
+        )
+    options = ", ".join(
+        f"{name} ({', '.join(sorted(found[name]))})" for name in sorted(found)
+    )
+    return Resolution(
+        None, f"Your question could mean: {options}. Which one should I trace?"
+    )
+
+
+def _concept_hits(words: set[str], module: Module) -> dict[str, bool]:
+    """Map each defined name a question word matches to whether it matched first."""
+    hits = {}
+    for name in module.defines:
+        parts = [p for p in name.lower().split("_") if p]
+        matched = [i for i, part in enumerate(parts) if _stem_match(words, part)]
+        if matched:
+            hits[name] = matched[0] == 0
+    return hits
+
+
+def _stem_match(words: set[str], part: str) -> bool:
+    for word in words:
+        short, long = sorted((word, part), key=len)
+        if len(short) >= MIN_STEM and long.startswith(short):
+            return True
+    return False
 
 
 def _listing(names: list[str]) -> str:

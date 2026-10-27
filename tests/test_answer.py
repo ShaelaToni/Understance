@@ -13,7 +13,12 @@ def test_narration_carries_the_text_and_the_model_that_wrote_it():
 
 
 def test_answer_statuses_are_a_fixed_list():
-    assert [s.value for s in AnswerStatus] == ["answered", "needs_input", "incomplete"]
+    assert [s.value for s in AnswerStatus] == [
+        "answered",
+        "needs_input",
+        "incomplete",
+        "needs_decision",
+    ]
 
 
 def test_answer_is_frozen_and_stores_tuples():
@@ -24,5 +29,6 @@ def test_answer_is_frozen_and_stores_tuples():
     assert answer.affected == ("a",)
     assert answer.findings == (finding,)
     assert answer.blocked == ()
+    assert answer.open_questions == ()
     with pytest.raises(FrozenInstanceError):
         answer.status = AnswerStatus.NEEDS_INPUT
