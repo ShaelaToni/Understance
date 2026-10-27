@@ -31,6 +31,8 @@ Source for this starter: the "Agent governance" section of CLAUDE.md. These are 
 
 - Every limit Understance states is backed by a named test, and the manifest fails its own test if one goes missing (tests/test_capabilities.py). The subject repo is byte-for-byte unchanged after all seven evals, including one whose question asks it to delete a module (tests/test_evals.py, test_the_subject_repo_is_unchanged_after_every_eval).
 
+- Every commit runs the whole suite: the pre-commit hook runs all tests (governance, evals, contracts, the capabilities manifest), so a broken promise blocks the commit (.pre-commit-config.yaml, hook `tests`; shown blocking a planted failing test, Oct 27).
+
 ## To be expanded
 - Spec 17: the full role and regulation for each agent.
 - Spec 19: the governance enforcement tests (the step 2.6 GATE in docs/BUILD_ORDER.md).

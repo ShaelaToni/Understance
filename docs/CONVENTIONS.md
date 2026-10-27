@@ -81,6 +81,8 @@ src/understance/orchestration/     (orchestrator + agents; the shell run.py / AP
 tests/
 sample_app/            (the trusted subscription-SaaS fixture; its own tests in sample_app/tests/ are test evidence, not graph modules)
 facts/                 (the exported facts as CSV, committed; the Zetaris sources and the sample-mode store)
+metadata.json          (where each sponsor sits and its test; checked by tests/test_metadata.py)
+docs/ZETARIS_SETUP.md  (every Zetaris step and statement, as run on the build machine)
 scripts/               (helper scripts, such as export_facts.py)
 evals/                 (the 7 golden-set scenarios + hand-authored expected outputs)
 input_examples/

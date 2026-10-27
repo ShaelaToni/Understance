@@ -455,6 +455,13 @@ Layer: 3.6 shell, evals
 Gate: 15 new tests (6 capabilities, 9 evals); the capabilities tests red first (no module), the evals pass from the start because they pin behavior built in 3.5; 5 planted violations, each shown failing a test before this instruction was sent; full suite 253 passed.
 Date: Oct 27. Actor: Shaela (approved).
 
+## Step 3.7: the README, metadata.json, the Zetaris setup and the full-suite hook (Oct 27)
+Decision: README.md is rewritten for judges and owners: the problem and who it is for, a 60-second sample-mode start, how it stays honest (with the observed model distortion), the four agents, each sponsor's role with its proof, live setup, usage, how it is tested, architecture, limitations, data, AI usage, pre-existing work (none) and licences. metadata.json names where each sponsor sits and its test, with the exact H-MEM wording; tests/test_metadata.py fails if a named file goes missing or the wording changes. docs/ZETARIS_SETUP.md records every Zetaris step and statement as run on the build machine (upload, three sources, six tables, two USLs with their DDL and ACTIVATE statements, checks, the data quality rule, connecting Understance). The pre-commit hook now also runs the full test suite.
+Why: the submission requires a README with setup and sponsor explanation and a metadata.json; the USL statements lived only in the planning record, so a judge could not rebuild the Zetaris setup from the repo. The hook makes every promise in the capabilities manifest and every eval run on each commit, closing STATE thread 11's governance half (the dead-code detector stays open).
+Layer: 3.7 docs, metadata, hook
+Gate: 2 new tests; full suite 255 passed; a planted failing test shown blocked by the new hook, then removed.
+Date: Oct 27. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

@@ -6,7 +6,7 @@
 ## Current position
 - **Phase:** 3 (real end-to-end through the sponsors). Phases 0 and 1 complete; Phase 2 complete except 2.6 and 2.6a (governance tests and the capabilities manifest), deferred for time.
 - **Step:** Phases 3.2 to 3.4 done. Phase 3.5 code done: run.py and POST /run answer through Zetaris, Nightshift and H-MEM (or offline in sample mode), with a trace file per run and the ask-once decision loop. Step 3.6 done: the capabilities manifest (run.py --capabilities, GET /capabilities, a scope line in every answer) and the 7 evals.
-- **Next:** Shaela's live run (GATE 3); then the README, the Zetaris write-ups, the video, the deck and the submission.
+- **Next:** Shaela's live run (GATE 3); the Zetaris write-ups; the untested-dependent risk in the answer; repo public and a fresh-clone check; the video, the deck and the submission; the web page if time allows. Step 3.7 done: README, metadata.json, docs/ZETARIS_SETUP.md, full-suite hook.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 253 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 5 answer, 3 template narrator, 20 agents, 14 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store, 25 nightshift narrator, 25 hmem memory, 2 read-only memory store, 16 app, 4 server, 6 capabilities, 9 evals)
+- Tests: 255 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 5 answer, 3 template narrator, 20 agents, 14 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store, 25 nightshift narrator, 25 hmem memory, 2 read-only memory store, 16 app, 4 server, 6 capabilities, 9 evals, 2 metadata)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -32,7 +32,7 @@
 8. ~~Import-path wiring for `understance`~~ RESOLVED Oct 26 (Shaela, Phase 1.1): `pytest.ini` with `pythonpath = src` (no pyproject.toml); recorded in docs/CONVENTIONS.md.
 9. **Full dependency locking** for fresh-clone reproducibility is to be revisited at Phase 5, when the runtime deps (FastAPI, the sponsor clients) are in; for now only the two top-level dev tools are pinned. Their transitive deps (iniconfig, packaging, pluggy, pygments) are not pinned (Shaela, Oct 26). pre-commit (4.7.0) was added and pinned at 0.6; its transitive deps are not pinned either.
 10. ~~0A not ticked~~ RESOLVED Oct 26 (Shaela): docs/DECISIONS.md is the authoritative in-repo record of the locked decisions; the build spec is private and not in the repo. docs/BUILD_ORDER.md header note and the 0A line now point to docs/DECISIONS.md instead of "spec section 18"; 0A ticked.
-11. **Pre-commit hook additions at their phases (Shaela, Oct 26):** ~~the architecture fitness test run joins the hook at 1.3~~ RESOLVED: landed in 2a7a6fe. Still open: the governance test run and a dedicated dead-code detector join at 2.6.
+11. **Pre-commit hook additions at their phases (Shaela, Oct 26):** ~~the architecture fitness test run joins the hook at 1.3~~ RESOLVED: landed in 2a7a6fe. Governance half RESOLVED Oct 27 (step 3.7): the full test suite runs in the hook. Still open: a dedicated dead-code detector.
 12. ~~Complexity / function-length cap not active~~ RESOLVED Oct 26 (Shaela): enabled in `ruff.toml` (C901 max 10, PLR0915 default 50 statements), enforced by the hook, recorded in docs/CONVENTIONS.md.
 13. ~~DECISIONS.md FOR-THE-DECK item 5 inconsistent~~ RESOLVED Oct 26 (Shaela): now reads "5. Zetaris local now, AWS as the demo-safety fallback, reversible behind the FactStore port (the agnostic seam in action)."
 14. **BUILD_ORDER.md header still cites the private build spec for sections 17 (agent roles) and 19 (governance enforcement).** Only the section 18 reference was changed, as directed. Those sections are not in the repo either; docs/GOVERNANCE.md is the in-repo starter for both. Pending Shaela.
@@ -221,3 +221,8 @@
 - RED: tests/test_capabilities.py failed to import the manifest. The 7 evals passed from the start: they pin behavior built in 3.5. GREEN: full suite 253 passed. Planted violation: naming a test that does not exist in the manifest made test_every_claim_and_limit_names_a_test_that_exists fail; restored and green again.
 - Output examples regenerated in sample mode (every answer now carries the scope line).
 - Snippet (gate part 4): ask Understance what it can and cannot do, and it answers from a list where every promise points to the test that proves it. Seven scenarios, written before the answers were seen, run on every commit, and the code it reads is checked unchanged afterwards.
+
+### Oct 27, step 3.7 README, metadata.json, Zetaris setup, full-suite hook
+- Directive (Shaela): the README and submission files before the web page; the page last, so it can be dropped without loss.
+- 2 new tests (metadata paths and the H-MEM wording); full suite 255 passed. The new pre-commit hook blocked a planted failing test, which was then removed.
+- Snippet (gate part 4): anyone can now clone Understance, run it in a minute with no setup beyond Python, read exactly where Zetaris, Nightshift and H-MEM sit, and rebuild the Zetaris layer step by step. Every commit now runs every test.

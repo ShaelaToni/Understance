@@ -101,7 +101,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 - [x] 5.1 run.py / POST /run (bind 0.0.0.0), structured JSON in/out, structured errors. Also expose the manifest: a --capabilities flag and GET /capabilities, plus a "scope and limits" line in every run's output (spec 23).
 - [ ] 5.2 Dockerfile; host.docker.internal for Zetaris and Nightshift.
 - [ ] 5.3 confirm SAMPLE_MODE runs real logic with sponsors stopped.
-- [ ] 5.4 README complete: LEADS with the problem and the benefit (StoryBrand: name the villain, user is the hero), then setup, usage, deps, architecture, agents, limitations, sponsor explanation, AI-usage disclosure, sample mode, pre-existing = none.
+- [x] 5.4 README complete: LEADS with the problem and the benefit (StoryBrand: name the villain, user is the hero), then setup, usage, deps, architecture, agents, limitations, sponsor explanation, AI-usage disclosure, sample mode, pre-existing = none.
 - [ ] 5.5 three input_examples + matching output_examples; logs/ from real runs.
 - [ ] 5.6 secret scan; make repo public; test the link logged out.
 - [ ] 5.7 full fresh-clone validation flow, including sponsors-stopped sample mode. Do this Sunday, not Monday night.

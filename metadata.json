@@ -1,0 +1,57 @@
+{
+  "name": "Understance",
+  "tagline": "Understand before you change.",
+  "track": "Track 2: The Agent That Can Explain Why",
+  "team": "Wisdom by Design",
+  "repository": "https://github.com/ShaelaToni/Understance",
+  "entry_points": {
+    "command_line": "run.py \"<question>\" [--decide \"<answer>\" --by \"<name>\"]",
+    "http": "run.py --serve: POST /run, GET /capabilities, GET /health on 0.0.0.0:$PORT",
+    "capabilities": "run.py --capabilities",
+    "sample_mode": "SAMPLE_MODE=true (offline, no model, no .env)"
+  },
+  "agents": [
+    "Planner",
+    "Retriever",
+    "Evaluator",
+    "Explainer"
+  ],
+  "sponsor_technology": {
+    "zetaris": {
+      "role": "The data layer. Three sources (understance_code, understance_git, understance_tests) and a Unified Semantic Layer (understance_usl.module, understance_links.dependency) that the agents read through the REST API, after a data quality rule runs inside Zetaris on every run.",
+      "where": [
+        "src/understance/adapters/zetaris_fact_store.py",
+        "docs/ZETARIS_SETUP.md",
+        "scripts/check_zetaris.py",
+        "facts"
+      ],
+      "test": "tests/test_zetaris_fact_store.py"
+    },
+    "meterless_nightshift": {
+      "role": "The AI provider. The Explainer's narrator calls the Meterless runtime; each receipt (id, routed model, privacy path, egress) is logged.",
+      "model": "webllm/Qwen2.5-1.5B-Instruct-q4f16_1-MLC, local, through meterless/auto",
+      "where": [
+        "src/understance/adapters/nightshift_narrator.py",
+        "scripts/check_nightshift.py"
+      ],
+      "test": "tests/test_nightshift_narrator.py"
+    },
+    "meterless_engine": {
+      "engine": "H-MEM",
+      "feature": "The owner's decisions, kept per repo in an append-only ledger, so an open question is asked once and recalled on every later run.",
+      "verification": "implements the Meterless H-MEM spec, verified with a pytest port of its core test cases.",
+      "where": [
+        "src/understance/adapters/hmem_memory.py"
+      ],
+      "test": "tests/test_hmem_memory.py"
+    },
+    "nvidia": {
+      "used": false
+    },
+    "cursor": {
+      "used": false
+    }
+  },
+  "data": "sample_app/ is synthetic, written for this project inside the build window.",
+  "pre_existing_components": "none"
+}
