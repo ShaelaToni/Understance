@@ -38,7 +38,7 @@
 Woven at EVERY step: write the failing test first; pass the five-part done-gate; commit (what/why/Layer/Gate); update docs/STATE.md; record any decision in docs/DECISIONS.md; panel review against current state.
 1. TOOL SETUP (start first, runs in parallel, do not block coding): HackOS solo team; register Zetaris Cloud + start it; install Nightshift, get Runtime URL + token; NVIDIA key into Nightshift's Providers tab.
 2. GIT: git init, first commit now (inside the window). Add .gitignore, .env.example (placeholders), README skeleton.
-3. DOCUMENTATION: drop in CLAUDE.md; create docs/ (BUILD_ORDER, REQUIREMENTS, GOVERNANCE, CONVENTIONS, STATE, DECISIONS, THREAT_MODEL); create the pre-commit hook (fitness + code-health); configure Claude Code to omit attribution.
+3. DOCUMENTATION: drop in CLAUDE.md; create docs/ (BUILD_ORDER, REQUIREMENTS, GOVERNANCE, CONVENTIONS, STATE, DECISIONS, THREAT_MODEL); create the pre-commit hook (fitness + code-health); configure the coding tool to omit attribution.
 4. STRUCTURE: folder skeleton per docs/CONVENTIONS.md (app/domain, ports, usecases, adapters, orchestration; tests; data; sample_app; input_examples; output_examples; logs).
 5. CORE (Phase 1): domain entities -> ports -> architecture + governance fitness tests.
 6. AGENTS (Phase 2): sample_app -> ast adapter -> AnalyzeRepo -> ComputeBlastRadius -> orchestrator + 4 agents over fakes (this is sample mode) -> governance tests -> capabilities manifest.
@@ -58,12 +58,12 @@ Deepening (Phase 4) only after the floor is green and if time remains.
   - [ ] .gitignore (.env, .env.*, keep !.env.example, *.pem, *.key, secrets/, credentials/).
   - [ ] .env.example with placeholders only (Zetaris + Nightshift settings).
   - [ ] README skeleton (track, problem, one-line, setup TBD).
-  - [ ] CLAUDE.md at repo root (auto-loaded by Claude Code each session; standing rules, charter, governance, voice, build-strictly-in-order). A ready draft was delivered; drop it in.
+  - [ ] CLAUDE.md at repo root (auto-loaded at the start of each build session; standing rules, charter, governance, voice, build-strictly-in-order). A ready draft was delivered; drop it in.
   - [ ] docs/: BUILD_ORDER.md (copy of this checklist), REQUIREMENTS.md (the requirements checklist), GOVERNANCE.md (spec 17 + 19), CONVENTIONS.md (spec 21), STATE.md (initialize now; keep current from the first action, not just at session end), DECISIONS.md (ADR entries), THREAT_MODEL.md.
   - [ ] Folder skeleton with the EXACT names in docs/CONVENTIONS.md (naming conventions). Do not invent file or class names; follow CONVENTIONS.md, and if a name is not covered, stop and ask.
   - [ ] Dependency management: pip + venv + requirements.txt. Web framework: FastAPI. (spec 22)
   - [ ] Pre-commit hook that runs the fitness-function suite (architecture + governance + operational + code-health: ruff, ruff-format, complexity/length cap, unused-import, dead-code), so they run on every commit, not just at gates (spec 22).
-  - [ ] Configure Claude Code to omit co-author/attribution lines; no AI attribution anywhere in the repo (spec 22). Disclose the tool only in the README AI-usage section.
+  - [ ] Turn off the coding tool's co-author/attribution lines; no AI attribution anywhere in the repo (spec 22). Disclose the tool only in the README AI-usage section.
   - [ ] Footprint report emitted per run + a governance test that the subject repo is byte-for-byte unchanged after a run (spec 22).
   - [ ] evals/ directory for the 7 golden-set scenarios with hand-authored expected outputs (spec 22).
 
@@ -108,7 +108,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 ## PHASE 6 - SUBMISSION ARTIFACTS
 - [ ] 6.1 demo video 1-4 min (scripted around a collaboration moment, the "I cannot reach this" turn, the sponsor beats, and the transparency beat: ask the tool what it does via --capabilities, then show a limit hold).
 - [ ] 6.2 slide deck (8 required points).
-- [ ] 6.3 sponsor tech explanation (Zetaris, Meterless/H-MEM, Nightshift, Nemotron, Cursor = Claude Code, what was unique).
+- [ ] 6.3 sponsor tech explanation (Zetaris, Meterless/H-MEM, Nightshift, Nemotron, Cursor not used, the coding tool named only where the rules require it, what was unique).
 - [ ] 6.4 submit on HackOS with hours to spare.
 
 ---

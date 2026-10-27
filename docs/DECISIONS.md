@@ -38,7 +38,7 @@ Put it under the fitting heading (Strategic, Architecture, Tooling and Infra, Sc
 - Why this: fuses "understand" and "stance", comprehension plus a firm footing before you act, directly on-thesis ("understand before changing"); memorable and its own identity, distinct from the OwnYour brand.
 - Why not a generic descriptor or an OwnYour-tied name: generic is forgettable; an OwnYour-tied name risks confusing judges about pre-existing work (this build is all-new-in-window). Understance stands on its own.
 - Clearance (not legal advice): known prior use is a Canadian lingerie/bra brand (apparel, roughly Class 25, reportedly closed July 2026), a different trademark class from software (9/42), so unlikely to conflict for a dev tool; fine as the hackathon name. Commercial use later needs a proper trademark search and counsel. There is lingering apparel SEO association to overcome, and domain/GitHub/npm handles should be checked if it goes commercial.
-- Package name: `understance` doubles as the Python package name; record it in docs/CONVENTIONS.md at Step 0.4/0.5 so Claude Code uses it at the folder skeleton.
+- Package name: `understance` doubles as the Python package name; record it in docs/CONVENTIONS.md at Step 0.4/0.5 so the build uses it at the folder skeleton.
 - Domain: `understance.dev` secured Oct 26 (.com is held by the former apparel brand; .dev fits a developer tool and avoids the .com conflict). Brand consistently as understance.dev.
 - Revisit if: a commercial trademark clearance surfaces a conflict. [Oct 26 · locked for the hackathon]
 
@@ -85,7 +85,7 @@ Put it under the fitting heading (Strategic, Architecture, Tooling and Infra, Sc
 
 **Zetaris FactStore adapter uses REST, not JDBC** (light, Python, matches our env vars).
 - Why this: REST needs only an API key plus the REST URL and org ID (already our ZETARIS_REST_URL / ZETARIS_ORG_ID / ZETARIS_API_KEY) and fits Python with no extra runtime.
-- Why not JDBC: it needs Java and a driver JAR, heavier and against keep-v1-light. JDBC stays available for ad-hoc Claude Code exploration if ever wanted, but the shipped adapter is REST.
+- Why not JDBC: it needs Java and a driver JAR, heavier and against keep-v1-light. JDBC stays available for ad-hoc exploration if ever wanted, but the shipped adapter is REST.
 - Revisit if: REST proves insufficient for a query we need and JDBC is the only path. [Oct 26 · locked]
 
 **Zetaris characterization finding (Oct 26): result shape + select explicit columns** (observed live; informs the adapter). Observed by running `SELECT 1` (returned `1`) and `SELECT * FROM NY_TAXI.taxi_zones LIMIT 5` against the running local instance. What we learned: Zetaris answers SQL end to end; addressing is two-part `catalog.table` (e.g. `NY_TAXI.taxi_zones`, catalog straight to tables, no schema layer in the sample); results are ordinary typed tabular rows (numeric and text columns) and can include large fields (a geometry column, `the_geom`, too big to paste). Build implication: the FactStore adapter selects explicit, needed columns, never `SELECT *`, to keep payloads small, deterministic, and aligned with our minimal-data and stable-order safeguards. This is the observe-first step of characterization-then-contract; it feeds the Phase 3 Zetaris contract test and adapter. [Oct 26 · finding, logged at Shaela's direction]
@@ -100,24 +100,19 @@ Put it under the fitting heading (Strategic, Architecture, Tooling and Infra, Sc
 - Why not Postgres: heavier to stand up; only needed if the Zetaris smoke test shows it cannot read a local SQLite, then a minimal database.
 - Revisit if: the Phase 3.2 Zetaris-ingest smoke test requires it. [Oct 24 · backing may change, port will not]
 
-**Claude Code, not Cursor** (zero ramp).
+**The existing coding tool, not Cursor** (zero ramp).
 - Why this: a year of fluency, no learning curve, and Cursor is optional per the rules.
 - Why not Cursor: it is the recommended workshop tool, but it is a new environment to learn under a deadline for no required gain.
 - Revisit if: a specific Cursor-only step proved necessary, which it has not. [Oct 24 · locked]
 
-**Central orchestration window runs on Opus 5.5 at Medium effort (its tuned default); Extra only for isolated hard reasoning; Fable 5.1 as the sanctioned step-up** (capability for the role without wasting limits or the routing quirk). [verified against Anthropic's official model docs + the in-app effort guidance, Oct 26]
-- Why this: Anthropic's official guidance starts with Opus 5.5 for long-running agentic and knowledge work, and Medium is its tuned default. The in-app note says Extra often does not improve results, is much slower, and uses limits faster, which matters on a Max plan during a sprint. Quality and hallucination control in this role come from the grounding discipline (cite evidence, verify, current-state-only, never fabricate), not from raw effort.
-- Extra effort: reserve for a specific, genuinely hard reasoning moment (a thorny design fork or a deep panel review), switched per task if the app allows, not left on by default.
-- Why not Fable 5.1 by default: top reasoning option but slowest, heaviest on Max usage, and can redirect some queries to Opus 4.8; reserve for when Opus 5.5 genuinely falls short (Anthropic's own stated trigger).
-- Why not Sonnet/Haiku: tuned for speed and high-volume work, not the deep-reasoning orchestration role.
-- Revisit if: Opus 5.5 at Medium (with occasional Extra) falls short on the hardest reasoning, then step up to Fable 5.1. [Oct 26 · decided; corrected same day from an earlier "higher effort default" note]
+**[Redacted Oct 27]** An entry recording the orchestration window's AI model and effort settings stood here. It named an AI tool, which the no-attribution rule forbids outside the README AI-usage line, and it is private process detail; it remains in the private project record. No build decision depended on it.
 
 **Dedicated "Understance Tutor" helper (silent mentor window)** (comprehension so Shaela can explain the tool, inside and out).
 - Why this: Shaela must be able to explain Understance to judges and stakeholders without needing to write every line herself; a separate window turns code she pastes into short, over-the-shoulder lessons and keeps the build and orchestration windows uncluttered.
 - Why not have the orchestration window also tutor: it would crowd the build thread and blur roles; a silent, read-only tutor is cleaner and can be consulted on its own.
 - Roster (real frameworks, no fabricated quotes): Al Sweigart (Automate the Boring Stuff), Felienne Hermans (The Programmer's Brain), Neal Ford and Robert C. Martin (architecture reasoning), Angela Yu (100 Days of Code).
-- Style: one concept per lesson, plain words first, tie each snippet to its role in the architecture, end with a teach-back so understanding is provable, not recited. Reads the canonical claude/ docs so lessons are Understance-specific.
-- Onboarding saved at claude/HACKATHON_TUTOR_ONBOARDING.md. [Oct 26 · decided]
+- Style: one concept per lesson, plain words first, tie each snippet to its role in the architecture, end with a teach-back so understanding is provable, not recited. Reads the canonical private project docs so lessons are Understance-specific.
+- Onboarding saved in the private project docs. [Oct 26 · decided]
 
 **Pursue the NVIDIA Nemotron award: open, default-yes-if-time** (bonus prize, zero rework to defer). [DECK candidate]
 - Why this: it is swappable behind the Explainer port, so choosing Nemotron is config (pin the model string + per-request logging), not architecture; Nightshift is meterless so no NVIDIA credits are needed; the award is large (our notes: an NVIDIA DGX Spark, about $4,699) and there is no separate application.
@@ -207,7 +202,7 @@ These were decided across the planning session and not yet recorded. Pending ite
 
 **Decision-record homes: two for now (the project decision map + repo docs/DECISIONS.md), with a relay rule** (no drift while planning is still live).
 - Why this: planning decisions are still being settled in the orchestration window, so the project decision map stays live there, while the repo docs/DECISIONS.md is the build's record.
-- Relay rule: a decision settled in the orchestration window is recorded in the project map and relayed to CeeCee to add to docs/DECISIONS.md; a decision made during the build goes into docs/DECISIONS.md and is mirrored back to the project map.
+- Relay rule: a decision settled in the orchestration window is recorded in the project map and relayed to the build session to add to docs/DECISIONS.md; a decision made during the build goes into docs/DECISIONS.md and is mirrored back to the project map.
 - Why not one home now: one topic, one home is the standing rule (entry above), but collapsing early would cut the live planning window off from its own record; the relay is the deliberate, temporary exception that keeps both in step.
 - Revisit if: planning winds down; then collapse to the repo as the single source. [Oct 26 · decided by Shaela]
 
@@ -304,6 +299,13 @@ Why: the box was checked before comparing the result to the predefined spec, so 
 Layer: 2.1 fixture
 Gate: part 2 (output matches the predefined result) not met; reopened.
 Date: Oct 26. Actor: Shaela (approved).
+
+## No tool names outside the README AI-usage line (Oct 27)
+Decision: no instruction, doc, code comment, or commit in this repo names the coding tool or an AI model. Instructions are written as direct numbered steps with no tool name in the body. The README's AI-usage line stays as the single disclosure the hackathon rules require. Existing mentions in CLAUDE.md, BUILD_ORDER, DECISIONS, REQUIREMENTS, and STATE were replaced with neutral wording (substance unchanged), and one DECISIONS entry about the orchestration window's AI model settings was redacted (private process detail, kept in the private project record). The file names CLAUDE.md and .claude/settings.json are kept because the coding tool only loads its rules and its attribution-off setting under those names.
+Why: naming the coding tool in an instruction or doc is a form of attribution, and the standing rule is no attribution; this extends the commit and code rule to the instruction text and docs.
+Layer: process and conventions
+Gate: a repo-wide search finds the tool name only in README.md's AI-usage line and in the two functional file names.
+Date: Oct 27. Actor: Shaela (directed).
 
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:

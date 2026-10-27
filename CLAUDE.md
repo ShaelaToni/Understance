@@ -1,6 +1,6 @@
 # CLAUDE.md - read this first, every session
 
-This repository is a hackathon build by Shaela Beard (Team: Wisdom by Design, solo) for the Open Agent Hackathon 2026. Claude Code loads this file automatically. Follow it every session.
+This repository is a hackathon build by Shaela Beard (Team: Wisdom by Design, solo) for the Open Agent Hackathon 2026. This file is loaded automatically at the start of every build session. Follow it every session.
 
 ## How we build
 - Build STRICTLY in the order in docs/BUILD_ORDER.md. Do NOT skip, reorder, or add steps of your own accord. A prior helper built out of order; this rule exists to prevent that.
@@ -63,7 +63,7 @@ RECONCILE BEFORE RECORDING (no reworded duplicates): before writing any decision
 - A short docs/THREAT_MODEL.md names each threat (hostile repo, prompt injection, secret exposure, history store as target, untrusted test execution) mapped to the safeguard that mitigates it.
 
 ## Voice and integrity (for all docs, README, commit messages)
-- No em dashes. No "trying" or "try." No "AI-powered" (say Claude Code, AI-directed, AI-orchestration).
+- No em dashes. No "trying" or "try." No "AI-powered" (say AI-directed or AI-orchestration).
 - Under-claim. Never fabricate. If you cannot see or reach something, say so and ask; do not invent.
 - Claim nothing the code does not do.
 - Ask questions as plain text in the conversation; never use multiple-choice prompt windows.
@@ -78,7 +78,7 @@ Layer: <e.g. 2.3 analyze_repo use case>
 Gate: <the test or check this satisfies>
 ```
 Record real architectural decisions in docs/DECISIONS.md.
-No AI attribution anywhere in the repo: no "Generated with Claude Code", no "Co-Authored-By: Claude" trailer, no "written by AI" comments. Configure Claude Code to omit co-author/attribution lines. The coding tool is disclosed once, honestly, in the README's AI-usage section (the rules require disclosing the tool); that is the only place.
+No AI attribution anywhere in the repo: no tool-generated footers, no co-author trailers, no "written by AI" comments, and no tool or AI model name in instructions, docs, code, or commits. The coding tool's own attribution settings are off (.claude/settings.json). The coding tool is disclosed once, honestly, in the README's AI-usage section (the rules require disclosing the tool); that is the only place. Instructions are direct numbered steps and name no tool (docs/CONVENTIONS.md, Instruction style).
 
 ## Naming
 Follow docs/CONVENTIONS.md exactly. Do not invent file names, class names, trace fields, id formats, or env var names. If a name is not covered there, stop and ask.

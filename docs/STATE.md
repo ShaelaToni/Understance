@@ -24,7 +24,7 @@
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
 2. ~~Folder skeleton: start kit vs CONVENTIONS.md~~ RESOLVED Oct 26: CONVENTIONS.md is authoritative.
-3. **BUILD_ORDER.md Phase 0 items not in the start kit:** 0B Nightshift + NVIDIA-key setup pending before Phase 3; footprint report/test deferred to Phase 2/3; `evals/` comes with the 0.5 skeleton (CONVENTIONS.md). The Claude Code attribution setting is done at 0.6. 0A: see thread 10.
+3. **BUILD_ORDER.md Phase 0 items not in the start kit:** 0B Nightshift + NVIDIA-key setup pending before Phase 3; footprint report/test deferred to Phase 2/3; `evals/` comes with the 0.5 skeleton (CONVENTIONS.md). The coding tool's attribution setting is done at 0.6. 0A: see thread 10.
 4. **GOVERNANCE.md and THREAT_MODEL.md are starters** drawn from CLAUDE.md; to be expanded from spec 17/19/23/24 and Shostack + STRIDE at the relevant phase.
 5. ~~GitHub email verification~~ RESOLVED Oct 26: Shaela verified `git@shaelabeard.com` on her GitHub account.
 6. ~~No `src/understance/__init__.py`~~ RESOLVED Oct 26 (Shaela): empty `src/understance/__init__.py` added, so `understance` is a regular package.
@@ -43,7 +43,7 @@
 **Before 0.1 - observations raised by the helper**
 - CLAUDE.md was already in the folder; to keep the kit's order it was left out of the first commit and placed at 0.4.
 - The planning docs were not yet in the folder (supplied later, before 0.4).
-- The helper's default setup adds a "Co-Authored-By: Claude" trailer; CLAUDE.md forbids it, so it was omitted on every commit.
+- The coding tool's default setup adds a co-author trailer; CLAUDE.md forbids it, so it was omitted on every commit.
 
 **0.1 git init**
 - Ran `git init` (git 2.50.1). Branch `main`, no commits. No surprises.
@@ -83,7 +83,7 @@
 - Directive (Shaela): skeleton only, no code. `src/understance/` with `domain/`, `ports/`, `usecases/`, `adapters/`, `orchestration/`, each with an empty `__init__.py`; top-level `tests/`, `sample_app/`, `evals/`, `input_examples/`, `output_examples/`, each with a `.gitkeep`; `logs/` not tracked (gitignored, created at runtime); `requirements.txt` with only `pytest` and `ruff` (FastAPI and sponsor SDKs come at their phases); a virtualenv at `.venv`.
 - Observation: this Mac has no `python` command, only `python3` (Python 3.14.7, /Library/Frameworks). The venv was created with `python3 -m venv .venv`; its Python is 3.14.7. Nothing installed into it yet.
 - Checks: `.venv` ignored (`.gitignore` line 9), `logs/` ignored (line 12).
-- Directive (Shaela): GitHub email verification resolved (she verified `git@shaelabeard.com`); 0A and the Claude Code attribution setting assigned to Step 0.6.
+- Directive (Shaela): GitHub email verification resolved (she verified `git@shaelabeard.com`); 0A and the coding tool's attribution setting assigned to Step 0.6.
 - 0.5 commit `05d1a42` (12 files, no trailer), not pushed.
 - Directive (Shaela): add an empty `src/understance/__init__.py` (regular package, not namespace). Done.
 - Directive (Shaela): install the dev deps and pin them. `.venv/bin/pip install pytest ruff` installed pytest 9.1.1, ruff 0.17.2, plus transitive iniconfig 2.3.1, packaging 26.3, pluggy 1.7.0, pygments 2.21.0. Confirmed with `pytest --version` and `ruff --version`. `requirements.txt` now `pytest==9.1.1` and `ruff==0.17.2`. pip printed a notice that pip 26.2.2 is available (venv has 26.2.1); not upgraded.
@@ -93,7 +93,7 @@
 - Directive (Shaela): pre-commit framework with the official ruff hooks only (lint + format), the checks that exist now. Installed pre-commit 4.7.0 into `.venv` and pinned it (`requirements.txt`: `pre-commit==4.7.0`, `pytest==9.1.1`, `ruff==0.17.2`). Checked the hook names at the official repo's `v0.17.2` tag (matches our ruff): `ruff-check` (lint; `ruff` is a legacy alias) and `ruff-format`. `.pre-commit-config.yaml` uses those two; `pre-commit validate-config` passed; `pre-commit install` wrote `.git/hooks/pre-commit`.
 - Proof (planted violation): staged the config, planted `src/understance/_planted_violation.py` containing only `import os`, attempted a commit. Hook output: `ruff check ... Failed`, `F401 os imported but unused`; commit exit 1; HEAD stayed `dd0bbe9`. Unstaged and deleted the planted file; never committed. Then `pre-commit run --all-files`: both hooks Passed on the real tree. (The run printed "Unstaged files detected" because requirements.txt was not yet staged; pre-commit stashed and restored it. Expected, not a failure.)
 - 0A: read docs/DECISIONS.md in full. The build spec (section 18) is not reachable, so 0A was NOT ticked; see open thread 10.
-- Directive (Shaela): configure Claude Code to omit attribution. Created `.claude/settings.json` (repo-scoped, committed, visible) with `"attribution": {"commit": "", "pr": "", "sessionUrl": false}`. The deprecated `includeCoAuthoredBy` key was not used. JSON validated with `jq`.
+- Directive (Shaela): configure the coding tool to omit attribution. Created `.claude/settings.json` (repo-scoped, committed, visible) with `"attribution": {"commit": "", "pr": "", "sessionUrl": false}`. The deprecated `includeCoAuthoredBy` key was not used. JSON validated with `jq`.
 - Directive (Shaela): architecture/governance test runs and a dedicated dead-code detector join the hook at 1.3 / 2.6, not now.
 - Directive (Shaela): close 0A with docs/DECISIONS.md as the authoritative in-repo record (build spec is private). BUILD_ORDER.md header note and 0A line changed from "spec section 18" to "docs/DECISIONS.md"; 0A ticked.
 - Directive (Shaela): add `ruff.toml` (not pyproject) enabling C901 (max-complexity 10) and PLR0915 (ruff default, confirmed via `ruff check --show-settings`: `max_statements = 50`). Recorded in docs/CONVENTIONS.md under "Code health." Proof: planted one function with 27 branches and 53 statements; the hook blocked it with C901 (27 > 10) and PLR0915 (53 > 50); HEAD unchanged; planted file removed, never committed; real tree passes.
@@ -112,7 +112,7 @@
 - Paused at green for Shaela's gate; not committed.
 - Directive (Shaela): commit 1.1 pass 1 but do NOT mark 1.1 done or advance to 1.2 (understanding gate open). BUILD_ORDER 1.1 rewritten to two passes (pass 1 Module/Dependency/DependencyGraph; pass 2 Finding/Evidence/Provenance; Symbol deferred to about 2.4, compute_blast_radius); checkbox left unchecked. File names approved and recorded in docs/CONVENTIONS.md ("Source and test files": cluster per file, test mirrors module). `tests/.gitkeep` deleted. The Symbol-deferral entry in docs/DECISIONS.md updated in place (target about 2.4; BUILD_ORDER amended).
 - NOT DONE, pending Shaela: a "two-homes-with-relay" DECISIONS entry was requested, but nothing in this session or the repo describes it (searched all .md files for "relay" and "two homes": no hits). Not written, to avoid inventing it. Needs Shaela's content.
-- RESOLVED: Shaela supplied the "two homes with a relay rule" decision (project decision map + repo docs/DECISIONS.md; orchestration-window decisions relayed to CeeCee for the repo, build decisions mirrored back; collapse to the repo when planning winds down). Recorded in docs/DECISIONS.md under Process, after "Reconcile before recording."
+- RESOLVED: Shaela supplied the "two homes with a relay rule" decision (project decision map + repo docs/DECISIONS.md; orchestration-window decisions relayed to the build session for the repo, build decisions mirrored back; collapse to the repo when planning winds down). Recorded in docs/DECISIONS.md under Process, after "Reconcile before recording."
 
 ### Oct 26, Phase 1.1 pass 2 (Finding, Evidence, Provenance)
 - Phase 1.2 design proposal brought first (no code). The Rival flagged the Explainer port/agent name collision. Shaela directed pass 2 before 1.2 and approved the rename: the port is Narrator, the agent stays Explainer (recorded in docs/DECISIONS.md; applied at 1.2).
@@ -134,3 +134,6 @@
 ### Oct 26, Phase 2.1 reopened
 - Found: the 2.1 box was checked before comparing the fixture to BUILD_ORDER line 76. Missing: the circular dependency, the in-fixture tests with one untested module, and the access module (auth instead).
 - Shaela approved reopening 2.1 and correcting the fixture to match line 76 in full. The corrected-fixture instruction follows as a separate commit.
+
+### Oct 27, tool names removed
+- Directive (Shaela): instructions name no tool; nothing in the repo names the coding tool or an AI model except the README AI-usage line. Replaced the mentions in CLAUDE.md, BUILD_ORDER, DECISIONS, REQUIREMENTS, and STATE with neutral wording (substance unchanged; earlier log lines were reworded only to remove the name), redacted one DECISIONS entry about the orchestration window's AI model settings, and added an Instruction style section to CONVENTIONS. File names CLAUDE.md and .claude/settings.json are kept (functional).

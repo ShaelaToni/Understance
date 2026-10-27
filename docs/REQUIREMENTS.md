@@ -25,7 +25,7 @@
 
 **Optional, scores points but not required for eligibility:**
 - [ ] NVIDIA Nemotron via Nightshift, model logged per request. For the Best-use-of-Nemotron award only (DGX Spark), NOT an eligibility gate. No event credits (a key is available on request via the sponsor thread). For the award: README names which agent runs on which Nemotron model and what it does; demo shows it in a real run; a receipt/model log is linked from the README as proof.
-- [ ] Cursor: optional coding tool; we use Claude Code instead and state that honestly.
+- [ ] Cursor: optional coding tool; not used. The coding tool actually used is named in the README AI-usage line and wherever else the rules require it.
 
 ## C. BUILD AND RUNNABLE (Technical 20, Demo 15) (Technical Execution Guide)
 - [ ] Runs from a FRESH clone with a documented command, no manual fixing (judges who cannot run it cannot score it)
@@ -60,7 +60,7 @@
 - [ ] metadata.json present, stating where each sponsor technology sits in the build (helps Sponsor Tech scoring)
 - [ ] Demo video 1-4 minutes showing the main workflow on a real run and how Zetaris and Meterless are integrated (agent querying Zetaris, the feature the Engine powers, one real request through Nightshift returning a result)
 - [ ] Slide deck covering the 8 points (problem/users, solution, agent workflow/architecture, technical stack, how Zetaris and Meterless were used, what was unique, product visuals, future enhancements)
-- [ ] Sponsor technology explanation (Zetaris integration/role; which Meterless Engine, what it does, the test result; how the app connects to Nightshift; where NVIDIA contributes if pursuing the award; Cursor = Claude Code; what was unique)
+- [ ] Sponsor technology explanation (Zetaris integration/role; which Meterless Engine, what it does, the test result; how the app connects to Nightshift; where NVIDIA contributes if pursuing the award; Cursor not used (coding tool named only where the rules require it); what was unique)
 - [ ] At least 3 sample inputs and matching outputs (recommended; do it)
 - [ ] Colab links IF agents run in Google Colab (N/A for us; we run locally/Docker)
 - [ ] Pre-existing components declared in the form (ours: none intended; all built in the window)
