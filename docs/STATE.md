@@ -142,3 +142,6 @@
 - sample_app now matches BUILD_ORDER line 76: auth renamed to access; a subscriptions <-> access cycle (access imports subscriptions inside has_access so the fixture loads cleanly); sample_app/tests/ covers every module except notifications; pytest.ini testpaths = tests so our suite never runs the fixture's tests. Truth: 7 modules, 12 edges, main the sole orphan, chain, cycle, and untested module recorded in tests/sample_app_truth.py.
 - Clarifies the earlier 2.1 note "It is only ever parsed, never executed": our analysis of sample_app is static (it never imports or executes subject code); separately, differential verification at 4.2 runs the trusted fixture's own tests. Two different activities, not a contradiction.
 - Snippet (gate part 4): 2.1 gives Understance a small, honest practice repo whose every import is hand-checked, including one real loop between subscriptions and access and one module with no test, so later steps can be graded against known truth.
+
+### Oct 27, README overhaul
+- README replaced with the approved overhaul: problem-first story, an honest FAQ, plain-English dated milestones (only what works is checked), and verified Nightshift setup steps (M1 to M4 edition, local Qwen 2.5 1.5B, .env names). Every capability not yet built is marked in progress.
