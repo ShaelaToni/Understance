@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 3 (real end-to-end through the sponsors). Phases 0 and 1 complete; Phase 2 complete except 2.6 and 2.6a (governance tests and the capabilities manifest), deferred for time.
-- **Step:** Phase 3.2 code done: the agents read the facts through Zetaris (two USL tables and three source tables) after its data quality rule passes, with a logged fallback to facts/ when Zetaris is unreachable. The live check is Shaela's.
-- **Next:** Shaela runs scripts/check_zetaris.py against her Zetaris; then 3.3, the Nightshift narrator.
+- **Step:** Phase 3.2 done (live check matched). Phase 3.3 code done: the Nightshift narrator writes a short summary from the verified links, a guard blocks any model claim that states evidence, and the proof lines stay deterministic. The live check is Shaela's.
+- **Next:** Shaela runs scripts/check_nightshift.py; then 3.4, the H-MEM memory, and 3.5, one real end-to-end run.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 161 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 3 answer, 3 template narrator, 20 agents, 11 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store)
+- Tests: 186 pass (17 graph, 10 finding, 8 ports, 6 architecture, 11 sample_app, 22 ast reader, 3 analyze repo, 5 blast radius, 3 answer, 3 template narrator, 20 agents, 11 orchestrator, 2 read-only fact store, 3 git history, 3 module tests, 3 enriched reader, 4 csv fact store, 21 zetaris fact store, 6 fallback fact store, 25 nightshift narrator)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -191,3 +191,12 @@
 - RED: tests/test_zetaris_fact_store.py and tests/test_fallback_fact_store.py failed to import the new adapters. GREEN: full suite 161 passed. Planted violation: skipping the rule made test_the_data_quality_rule_runs_first_and_is_logged fail; restored and green again.
 - Live check: scripts/check_zetaris.py, run by Shaela after this commit (it reads .env); result recorded when observed.
 - Snippet (gate part 4): before the agents answer anything, Understance now asks Zetaris to prove the facts hang together: every import link must point at a module that exists. Then it reads the joined view Zetaris built from three sources. If Zetaris is down, it says so and answers from the offline copy; if the facts are broken, it stops instead of guessing.
+
+### Oct 27, Phase 3.2 live check
+- Shaela ran scripts/check_zetaris.py: data quality passed (0 broken links); reads of 7, 12, 15, 1 and 9 rows; MATCH with facts/. One fact through Zetaris: sample_app.notifications imports sample_app.subscriptions (sample_app/notifications.py, line 3), 0 test files, last change 52fe793. Gate met; 3.2 ticked.
+
+### Oct 27, Phase 3.3 the Nightshift narrator
+- Directive (Shaela): approved the name nightshift_narrator.py and the guard; the model writes a short summary only, and the proof stays deterministic.
+- RED: tests/test_nightshift_narrator.py failed to import the new adapter. GREEN: full suite 186 passed. Planted violation: removing the file-path check made test_the_observed_distortion_is_blocked_and_the_proof_stands_alone fail; restored and green again.
+- Live check: scripts/check_nightshift.py, run by Shaela after this commit (it reads .env); result recorded when observed.
+- Snippet (gate part 4): Understance now asks a model to say, in plain words, what the verified links mean. It hands the model the links only, never the files or lines, and checks every sentence that comes back. This morning the model claimed billing lives at api.py line 4, which is wrong; that sentence would now be blocked, and the answer would show only the proof, file and line, straight from the facts.

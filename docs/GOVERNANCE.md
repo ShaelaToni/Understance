@@ -23,6 +23,8 @@ Source for this starter: the "Agent governance" section of CLAUDE.md. These are 
 
 - Facts pass a data quality rule before any agent reasons over them: ZetarisFactStore checks in Zetaris that every import link points at a module that exists, and stops the run on a broken link (tests/test_zetaris_fact_store.py); the fallback never hides a failed rule (tests/test_fallback_fact_store.py, test_a_failed_data_quality_rule_is_never_hidden_by_the_fallback). The API key never appears in an error (tests/test_zetaris_fact_store.py, test_the_token_never_appears_in_an_error).
 
+- The model never states evidence: it receives link summaries only, and the guard blocks any text that states a file path, a number or a module outside the verified links, or that the Meterless cross-check flags (tests/test_nightshift_narrator.py, test_the_observed_distortion_is_blocked_and_the_proof_stands_alone and test_the_guard_blocks_what_the_model_must_never_state). The Runtime API key never appears in an error (test_the_token_never_appears_in_an_error).
+
 ## To be expanded
 - Spec 17: the full role and regulation for each agent.
 - Spec 19: the governance enforcement tests (the step 2.6 GATE in docs/BUILD_ORDER.md).

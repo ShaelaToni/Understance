@@ -40,6 +40,9 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 - Port errors (in `ports/interfaces.py`): `FactsUnavailable` (a store cannot reach its facts; the fallback may step in) and `DataQualityError` (the facts failed a rule; the run stops).
 - Words: **data quality rule** (every import link points at a module that exists, at both ends; checked in Zetaris before the agents reason), **fall back** (read the offline facts when Zetaris is unreachable, and log it).
 
+- `src/understance/adapters/nightshift_narrator.py` holds `NightshiftClient` (`from_env` reads `METERLESS_BASE_URL`, `METERLESS_RUNTIME_TOKEN`, `METERLESS_MODEL`), `NightshiftReply`, `NightshiftNarrator` (implements `Narrator`), `NightshiftUnavailable`, `NightshiftError` and `blocked_reason` (the guard). `scripts/check_nightshift.py` is the live check. Tested by `tests/test_nightshift_narrator.py`.
+- Words: **model claim blocked** (the guard refused the model's text; only the proof lines are shown, and the log gives the reason and the receipt), **receipt** (the Meterless record of one model request: id, routed model, privacy path, egress).
+
 ## Use cases (Phase 2.3 on)
 - `src/understance/usecases/analyze_repo.py` holds `AnalyzeRepo(reader, store)` with `run(root)`; tested by `tests/test_analyze_repo.py`.
 - `src/understance/usecases/compute_blast_radius.py` holds `ComputeBlastRadius(store)` with `run(target)`; tested by `tests/test_compute_blast_radius.py`.
