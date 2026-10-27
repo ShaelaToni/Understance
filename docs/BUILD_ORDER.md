@@ -50,7 +50,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 - [x] 0A. Confirm the locked decisions (docs/DECISIONS.md).
 - [ ] 0B. Start sponsor setup IN PARALLEL now (downloads and accounts take time; prerequisite to Phase 3; do not block coding on these):
   - [ ] Confirm the solo HackOS team "Wisdom by Design."
-  - [ ] Register Zetaris Cloud; start the local Docker instance or the AWS instance. (Oct 26: the local Docker instance is running and answers SQL; see DECISIONS, Zetaris characterization finding.)
+  - [x] Register Zetaris Cloud; start the local Docker instance or the AWS instance. (Oct 26: the local Docker instance is running and answers SQL; see DECISIONS, Zetaris characterization finding. Account: the participant account Zetaris provided, signed in by Shaela.)
   - [x] Install Meterless Nightshift on the M1 Pro; get the Runtime URL and token from the Console. (Oct 27: first real request, receipt rcpt_req_ce9imi24.)
   - [ ] Create the NVIDIA API key at build.nvidia.com; put it in Nightshift's Providers tab (NOT the repo). (Deferred by Shaela, Oct 27.)
 - [ ] 0C. Create the repo:
@@ -74,7 +74,7 @@ Deepening (Phase 4) only after the floor is green and if time remains.
 
 ## PHASE 2 - USE CASES WITH FAKES (no sponsors; this is sample mode)
 - [x] 2.1 sample_app/ small Python repo = a tiny subscription SaaS (subscriptions, billing, access, notifications, api, tests), crafted so it also contains one import chain, one orphan, one untested module, one circular dependency. This repo carries the demo scenario: the request "add customer cancellation" with the unresolved policy "immediate or end of billing period?" that the agent must STOP and ask, not invent.
-- [ ] 2.2 adapters/ast_source_reader.py (first real adapter, no sponsor).
+- [x] 2.2 adapters/ast_source_reader.py (first real adapter, no sponsor).
 - [ ] 2.3 usecases/analyze_repo.py. GATE: tested with an in-memory FakeSourceReader AND the real ast adapter against sample_app.
 - [ ] 2.4 usecases/compute_blast_radius.py. GATE: on a known target, dependents match a hand trace.
 - [ ] 2.5 orchestrator + the four agents (Planner, Retriever, Evaluator, Explainer) over a FakeFactStore and a TemplateNarrator; usecases/answer_question.py; JSONL traces emitted. GATE: a planted unsupported claim is blocked and the trace shows the loop. Produce 3 sample inputs/outputs.

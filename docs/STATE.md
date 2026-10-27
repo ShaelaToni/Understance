@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 2 (use cases with fakes). Phases 0 and 1 COMPLETE (Oct 26).
-- **Step:** Phase 2.1 done: corrected fixture matches BUILD_ORDER line 76 (access module, subscriptions <-> access cycle, in-fixture tests, notifications untested).
-- **Next:** Phase 2.2: the ast SourceReader adapter. It must capture every import in a file, including imports inside functions, and must exclude sample_app/tests/ (test evidence, not graph modules) and state that exclusion in its scope line.
+- **Step:** Phase 2.2 done: ASTSourceReader reads sample_app into the hand-verified graph (7 modules, 12 edges, main the sole orphan), including the function-level import, and states its scope.
+- **Next:** Phase 2.3: usecases/analyze_repo.py, tested with an in-memory FakeSourceReader and the real ast adapter against sample_app.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`.
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 40 pass (9 graph, 10 finding, 8 ports, 5 architecture, 8 sample_app)
+- Tests: 55 pass (9 graph, 10 finding, 8 ports, 5 architecture, 8 sample_app, 15 ast reader)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -152,3 +152,9 @@
 - Nightshift (Oct 27): M1 to M4 edition on the Apple M1 Pro. First real request: receipt rcpt_req_ce9imi24, routed to the local Qwen 2.5 1.5B model, 2284 ms, privacy path local-only, egress none. Evidence: terminal output observed by Shaela; the key was never shown. Not yet wired into the Narrator adapter (Phase 3.3).
 - Decisions recorded in DECISIONS: Nightshift installed and answering; Qwen 2.5 1.5B as the local model; NVIDIA deferred; the Zetaris Unified Semantic Layer as required scope. The Oct 24 hosted-Nemotron entry is marked superseded.
 - Left open: the 0B Zetaris box stays unchecked until Shaela confirms the Zetaris Cloud registration; the HackOS team box is unchanged.
+
+### Oct 27, Phase 2.2 ast SourceReader
+- Directive (Shaela): build the first real adapter as a spec plus a failing test; the test file was supplied, the adapter was written to pass it.
+- RED: tests/test_ast_source_reader.py failed to import understance.adapters.ast_source_reader. GREEN: 15 passed; full suite 55 passed. Planted violation: reading only top-level statements made the function-level-import and exact-edges tests fail; restored and green again.
+- Also: .claude/settings.json now denies reading ./.env (not tested against the real file, by design). The 0B Zetaris box is checked: Shaela uses the participant account Zetaris provided, with the instance running on local Docker.
+- Snippet (gate part 4): Understance can now read a Python project without running any of it and draw its map: which file depends on which, including the hidden import tucked inside a function. On the practice app it matches the hand-checked answer exactly, and it says plainly what it left out and why.

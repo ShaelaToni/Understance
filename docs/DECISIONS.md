@@ -344,6 +344,21 @@ Layer: sponsor scope (Phase 3.2)
 Open: how the facts reach Zetaris. Zetaris lists no SQLite source type (observed in the local instance: File Source & API, Lakehouse, Database, Meta Store, Streaming, Unity Catalog), so the locked "SQLite read by Zetaris" entry meets its revisit trigger. The fork is pending Shaela.
 Date: Oct 27. Actor: Shaela (decided scope; mechanics pending).
 
+## Phase 2.2: the ast SourceReader (Oct 27)
+Decision: src/understance/adapters/ast_source_reader.py holds ASTSourceReader, the first real adapter behind the SourceReader port. It parses every .py file under the root with ast and never imports or runs subject code. It records every import in a file, including imports inside functions, and keeps only edges to modules inside the repo. Module names are dotted paths relative to the root's parent (reading sample_app gives sample_app.access and so on); __init__.py files are not modules. Output is sorted, so the same repo always gives the same graph. Beyond the port, scope_line(root) states in plain words what was read, what was excluded (any tests folder: test evidence, not graph modules), what was skipped and why (symlinks are never followed, files over 1,000,000 bytes, files that do not parse), which files call import_module or __import__ (named, not followed), and the classes static reading cannot reach.
+Why: 2.3 onward is graded against the hand-verified truth, so the reader must reproduce it exactly (7 modules, 12 edges, main the sole orphan, the access -> subscriptions edge that lives inside a function). The safeguards come from CLAUDE.md: never import or execute subject code; file-size caps; no symlink escape; no archive expansion (only .py files are opened). The reader keeps module names and edges only, never file contents, so no secret text is stored at this step; secret detection applies where text is ingested later. The scope line is run-specific (what this run excluded, skipped, and saw), so limits are stated, not assumed.
+Known limit: names are relative to the root's parent, so the root should be the package folder (sample_app here). A src/ layout is read by pointing at the package inside it.
+Layer: 2.2 adapter (SourceReader)
+Gate: tests/test_ast_source_reader.py, 15 tests, red first (module not found), then green; a planted violation (reading only top-level statements) shown failing; full suite 55 passed.
+Date: Oct 27. Actor: Shaela (approved).
+
+## The coding tool's settings deny reading .env (Oct 27)
+Decision: .claude/settings.json adds "permissions": {"deny": ["Read(./.env)"]}.
+Why: never exposing a secret is a rule with no exceptions, so it belongs in configuration the harness enforces, not in prompt text the model may weigh. Only ./.env is denied, so .env.example stays readable. The rule governs the coding tool's own file reads; Understance itself still loads .env at runtime inside its adapters, as designed.
+Layer: process (secrets)
+Gate: the settings file parses as valid JSON. It was deliberately not tested by reading the real .env, since a failed test would expose the key.
+Date: Oct 27. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."
