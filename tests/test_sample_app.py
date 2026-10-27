@@ -1,13 +1,18 @@
 import ast
+from itertools import pairwise
 from pathlib import Path
 
 from sample_app_truth import (
+    EXPECTED_CHAIN,
+    EXPECTED_CYCLE,
     EXPECTED_DEPENDENCIES,
     EXPECTED_MODULES,
     EXPECTED_ORPHANS,
+    EXPECTED_UNTESTED,
 )
 
 SAMPLE_APP = Path(__file__).resolve().parent.parent / "sample_app"
+FIXTURE_TESTS = SAMPLE_APP / "tests"
 
 
 def _module_name(path):
@@ -15,12 +20,27 @@ def _module_name(path):
     return ".".join(rel.parts)
 
 
+def _py_files(root):
+    return [p for p in root.rglob("*.py") if p.name != "__init__.py"]
+
+
 def _modules():
-    return [p for p in SAMPLE_APP.rglob("*.py") if p.name != "__init__.py"]
+    return [p for p in _py_files(SAMPLE_APP) if FIXTURE_TESTS not in p.parents]
 
 
-def test_every_sample_app_module_parses():
-    files = _modules()
+def _imported_names(path):
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    names = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module:
+            names.add(node.module)
+        elif isinstance(node, ast.Import):
+            names.update(alias.name for alias in node.names)
+    return names
+
+
+def test_every_sample_app_file_parses():
+    files = _py_files(SAMPLE_APP)
     assert files, "sample_app has no modules"
     for path in files:
         ast.parse(path.read_text(encoding="utf-8"))
@@ -43,3 +63,29 @@ def test_truth_orphans_are_never_import_targets():
     for orphan in EXPECTED_ORPHANS:
         assert orphan in EXPECTED_MODULES
         assert orphan not in targets
+
+
+def test_truth_has_exactly_one_orphan():
+    targets = {t for _, t in EXPECTED_DEPENDENCIES}
+    assert set(EXPECTED_MODULES) - targets == set(EXPECTED_ORPHANS)
+    assert len(EXPECTED_ORPHANS) == 1
+
+
+def test_truth_chain_follows_real_edges():
+    edges = set(EXPECTED_DEPENDENCIES)
+    for source, target in pairwise(EXPECTED_CHAIN):
+        assert (source, target) in edges
+
+
+def test_truth_cycle_has_both_edges():
+    a, b = EXPECTED_CYCLE
+    assert (a, b) in EXPECTED_DEPENDENCIES
+    assert (b, a) in EXPECTED_DEPENDENCIES
+
+
+def test_untested_module_is_imported_by_no_fixture_test():
+    imported = set()
+    for path in _py_files(FIXTURE_TESTS):
+        imported |= _imported_names(path)
+    tested = set(EXPECTED_MODULES) & imported
+    assert set(EXPECTED_MODULES) - tested == set(EXPECTED_UNTESTED)

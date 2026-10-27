@@ -307,6 +307,13 @@ Layer: process and conventions
 Gate: a repo-wide search finds the tool name only in README.md's AI-usage line and in the two functional file names.
 Date: Oct 27. Actor: Shaela (directed).
 
+## Phase 2.1 corrected fixture (Oct 27)
+Decision: sample_app matches BUILD_ORDER line 76 in full now: access (renamed from auth), a subscriptions <-> access cycle, in-fixture tests in sample_app/tests/ covering every module except notifications, and testpaths = tests in pytest.ini. Truth: 7 modules, 12 edges, main the sole orphan.
+Why: adding fixture tests after 2.2 would change the module set and truth that 2.2 is graded against. Fixture tests are test evidence, not graph modules: a test file is imported by nothing, so as a module it would count as an orphan and break "one orphan"; the 2.2 reader excludes sample_app/tests/ and states that in its scope line. access imports subscriptions inside a function so the fixture loads without a circular-import error when 4.2 runs its tests; 2.2's reader must therefore capture function-level imports. testpaths keeps our suite from running the fixture's tests. Clarifies the original 2.1 entry: our analysis is static and never imports or runs subject code; 4.2's differential verification runs the trusted fixture's own tests, a separate activity.
+Layer: 2.1 fixture
+Gate: tests/test_sample_app.py (8 tests, red first, green); cycle-edge planted violation shown failing; fixture tests 9 passed; full suite green.
+Date: Oct 27. Actor: Shaela (approved).
+
 ## FOR THE DECK (pull these forks for the decision-tree slide and investor answers)
 The five or six strongest "thinking" forks, each one a chosen path plus the road not taken:
 1. Positioning: a living comprehension-and-provenance layer, not an "AI code audit."

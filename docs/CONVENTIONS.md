@@ -46,7 +46,7 @@ src/understance/usecases/
 src/understance/adapters/
 src/understance/orchestration/     (orchestrator + agents; the shell run.py / API lives here or in a shell/ sibling)
 tests/
-sample_app/            (the trusted subscription-SaaS fixture)
+sample_app/            (the trusted subscription-SaaS fixture; its own tests in sample_app/tests/ are test evidence, not graph modules)
 evals/                 (the 7 golden-set scenarios + hand-authored expected outputs)
 input_examples/
 output_examples/

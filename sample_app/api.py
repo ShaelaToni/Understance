@@ -1,6 +1,6 @@
 """The service API, wiring the pieces together."""
 
-from sample_app.auth import authenticate
+from sample_app.access import authenticate
 from sample_app.billing import refund_on_cancel
 from sample_app.notifications import notify_cancellation
 from sample_app.subscriptions import create_subscription

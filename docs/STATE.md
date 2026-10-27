@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 2 (use cases with fakes). Phases 0 and 1 COMPLETE (Oct 26).
-- **Step:** Phase 2.1 REOPENED: committed fixture (52fe793) does not match BUILD_ORDER line 76 (missing the circular dependency, the in-fixture tests with one untested module, and the access module).
-- **Next:** Corrected 2.1 fixture (design approved by Shaela, instruction to follow). Do NOT start 2.2 until 2.1 matches line 76.
+- **Step:** Phase 2.1 done: corrected fixture matches BUILD_ORDER line 76 (access module, subscriptions <-> access cycle, in-fixture tests, notifications untested).
+- **Next:** Phase 2.2: the ast SourceReader adapter. It must capture every import in a file, including imports inside functions, and must exclude sample_app/tests/ (test evidence, not graph modules) and state that exclusion in its scope line.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B's Nightshift install and NVIDIA-key setup are pending, to be done before Phase 3. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`.
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 36 pass (9 graph, 10 finding, 8 ports, 5 architecture, 4 sample_app)
+- Tests: 40 pass (9 graph, 10 finding, 8 ports, 5 architecture, 8 sample_app)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -137,3 +137,8 @@
 
 ### Oct 27, tool names removed
 - Directive (Shaela): instructions name no tool; nothing in the repo names the coding tool or an AI model except the README AI-usage line. Replaced the mentions in CLAUDE.md, BUILD_ORDER, DECISIONS, REQUIREMENTS, and STATE with neutral wording (substance unchanged; earlier log lines were reworded only to remove the name), redacted one DECISIONS entry about the orchestration window's AI model settings, and added an Instruction style section to CONVENTIONS. File names CLAUDE.md and .claude/settings.json are kept (functional).
+
+### Oct 27, Phase 2.1 corrected fixture
+- sample_app now matches BUILD_ORDER line 76: auth renamed to access; a subscriptions <-> access cycle (access imports subscriptions inside has_access so the fixture loads cleanly); sample_app/tests/ covers every module except notifications; pytest.ini testpaths = tests so our suite never runs the fixture's tests. Truth: 7 modules, 12 edges, main the sole orphan, chain, cycle, and untested module recorded in tests/sample_app_truth.py.
+- Clarifies the earlier 2.1 note "It is only ever parsed, never executed": our analysis of sample_app is static (it never imports or executes subject code); separately, differential verification at 4.2 runs the trusted fixture's own tests. Two different activities, not a contradiction.
+- Snippet (gate part 4): 2.1 gives Understance a small, honest practice repo whose every import is hand-checked, including one real loop between subscriptions and access and one module with no test, so later steps can be graded against known truth.
