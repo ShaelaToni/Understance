@@ -5,10 +5,13 @@ from pathlib import Path
 SRC = Path(__file__).resolve().parent.parent / "src" / "understance"
 
 # Each inner-ring package maps to the understance subpackages it may import.
+# orchestration (the agents) sits outside the use cases but never reaches an
+# adapter: agents get ports injected, so a sponsor stays swappable.
 ALLOWED_INNER = {
     "domain": {"domain"},
     "ports": {"domain", "ports"},
     "usecases": {"domain", "ports", "usecases"},
+    "orchestration": {"domain", "ports", "usecases", "orchestration"},
 }
 
 
@@ -66,3 +69,10 @@ def test_checker_allows_inner_and_stdlib_imports():
         "from understance.domain.graph import DependencyGraph\n"
     )
     assert _violations(source, "ports") == []
+
+
+def test_checker_flags_an_agent_importing_an_adapter():
+    source = "from understance.adapters.template_narrator import TemplateNarrator\n"
+    assert _violations(source, "orchestration") == [
+        "understance.adapters.template_narrator"
+    ]

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from understance.domain.answer import Narration
 from understance.domain.finding import Finding
 from understance.domain.graph import DependencyGraph
 
@@ -29,8 +30,8 @@ class Narrator(ABC):
     """Turn findings into prose; the only port that reaches the model."""
 
     @abstractmethod
-    def narrate(self, findings: tuple[Finding, ...]) -> str:
-        """Return a plain-language explanation of the given findings."""
+    def narrate(self, findings: tuple[Finding, ...]) -> Narration:
+        """Return a plain-language explanation of the findings and the model used."""
 
 
 class MemoryStore(ABC):

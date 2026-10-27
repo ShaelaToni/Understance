@@ -14,6 +14,12 @@ Source for this starter: the "Agent governance" section of CLAUDE.md. These are 
 6. **Every action and every refusal is logged.** Each agent action, and each refused action, is written to logs/ as JSONL using the trace fields in docs/CONVENTIONS.md.
 7. **Self-describing: the capabilities-and-limits manifest.** The tool never lets a user assume what it can or cannot do. A manifest with four lists, DOES / DOES NOT / CANNOT REACH / YOU, is queryable via `--capabilities` and `GET /capabilities`, and shown in each run's output, the README, and the demo. Each DOES NOT and each limit references the test that enforces it; a claim with no backing test is not allowed; a test keeps the manifest in sync with the code (spec 23).
 
+## Enforced so far (Oct 27, Phase 2.5)
+- Rule 2 (least privilege): tests/test_orchestrator.py, test_each_agent_holds_only_the_ports_its_role_needs; agents read facts through ReadOnlyFactStore, which refuses every write (tests/test_read_only_fact_store.py).
+- Rule 4 (claims resolve to facts): the Evaluator blocks any claim that does not exactly match a stored import link (tests/test_agents.py, tests/test_orchestrator.py).
+- Rule 6 (every action and refusal logged): each agent action, send-back, block and stop-and-ask is a trace record (tests/test_orchestrator.py).
+- Agents never import an adapter: tests/test_architecture.py.
+
 ## To be expanded
 - Spec 17: the full role and regulation for each agent.
 - Spec 19: the governance enforcement tests (the step 2.6 GATE in docs/BUILD_ORDER.md).

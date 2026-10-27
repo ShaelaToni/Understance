@@ -69,6 +69,9 @@ class ASTSourceReader(SourceReader):
                 self._read_file(path, rel, scan)
 
     def _read_file(self, path: Path, rel: str, scan: _Scan) -> None:
+        if not path.stem.isidentifier():
+            scan.skipped.append(f"{rel} (not an importable module name)")
+            return
         if path.stat().st_size > self.max_file_bytes:
             scan.skipped.append(f"{rel} (over size limit)")
             return

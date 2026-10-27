@@ -5,8 +5,8 @@
 
 ## Current position
 - **Phase:** 2 (use cases with fakes). Phases 0 and 1 COMPLETE (Oct 26).
-- **Step:** Phase 2.4 done: ComputeBlastRadius lists what a change to a module could affect, with the file and line behind every edge.
-- **Next:** Phase 2.5: the orchestrator and the four agents over a FakeFactStore and a TemplateNarrator, with JSONL traces showing the Evaluator sending the Planner back.
+- **Step:** Phase 2.5 done: four agents answer a change question from the facts, the Evaluator sends the Planner back when the answer is not whole, unsupported claims are blocked, and every step is traced.
+- **Next:** Phase 2.5b: concept words and the policy stop-and-ask; then the Zetaris step.
 - **Settled (Shaela, Oct 26):** docs/CONVENTIONS.md is authoritative for the folder layout and supersedes the start kit (`orchestration/`, `evals/`, `input_examples/`, `output_examples/`, `requirements.txt`). 0B update (Oct 27): Zetaris runs locally and answers SQL (Oct 26); Nightshift is installed and answered a real request (Oct 27); NVIDIA is deferred (Shaela, Oct 27). See the Oct 27 session log entry. The footprint report and the subject-repo-unchanged test are deferred to Phase 2/3.
 
 ## What is green
@@ -19,7 +19,7 @@
 - 0.6 code-health caps: `ruff.toml` adds C901 (`max-complexity = 10`) and PLR0915 (ruff default `max-statements = 50`) to ruff's defaults; recorded in docs/CONVENTIONS.md. Shown to FAIL on a planted violation (one function blocked with `C901 too complex (27 > 10)` and `PLR0915 Too many statements (53 > 50)`, HEAD unchanged; planted file removed, never committed). Real tree passes.
 - 0.6 attribution setting: `.claude/settings.json` sets `attribution` to `{"commit": "", "pr": "", "sessionUrl": false}`. Since 2.2 it also denies reading `./.env` (`"permissions": {"deny": ["Read(./.env)"]}`).
 - 0A: confirmed. docs/DECISIONS.md is the authoritative in-repo record of the locked decisions (the build spec is private, not in the repo); read in full; ticked in docs/BUILD_ORDER.md.
-- Tests: 73 pass (15 graph, 10 finding, 8 ports, 5 architecture, 10 sample_app, 17 ast reader, 3 analyze repo, 5 blast radius)
+- Tests: 104 pass (15 graph, 10 finding, 8 ports, 6 architecture, 10 sample_app, 18 ast reader, 3 analyze repo, 5 blast radius, 3 answer, 3 template narrator, 13 agents, 8 orchestrator, 2 read-only fact store)
 
 ## Open threads
 1. ~~Em dashes in two planning docs~~ RESOLVED Oct 26: all 5 (4 in DECISIONS.md, 1 in REQUIREMENTS.md) replaced with commas.
@@ -169,3 +169,9 @@
 - Hand trace (sample_app.subscriptions): dependents access, api, billing, main, notifications; it depends on access and models; 8 import edges into it, each an observed finding with file and line (for example sample_app/access.py line 14, the import inside a function).
 - Scope: module level only; symbol level deferred past the hackathon (Shaela).
 - Snippet (gate part 4): name one part of the app, and Understance now lists everything that would feel a change to it, through every layer, and points to the exact file and line that proves each link.
+
+### Oct 27, Phase 2.5 the four agents
+- Directive (Shaela): review the agents' actions, rules and limits with the full panel before any agent code; the review produced 9 fixes, approved. Names approved after the panel resolved two concerns (ReadOnlyFactStore in its own file; Scope as a fixed list).
+- RED: the new tests failed to import the agents, the orchestrator and the answer types. GREEN: full suite 104 passed. Planted violation: handing the agents the raw store instead of ReadOnlyFactStore made the least-privilege test fail; restored and green again.
+- Trace fields now: timestamp, run_id, agent_name, action, input_summary, output_summary, target_agent, model, confidence, retry_count, status.
+- Snippet (gate part 4): ask "what would changing subscriptions affect?" and four agents work it out. The Planner looks at direct importers first; the Evaluator notices main also leads in and sends it back; the widened answer names 5 modules with the file and line for each link; an invented claim is blocked, never explained; and every step is written to the log.

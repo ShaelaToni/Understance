@@ -157,3 +157,15 @@ def test_a_repeated_import_keeps_its_lowest_line(tmp_path):
     assert [(d.source, d.target, d.line) for d in graph.dependencies] == [
         ("pkg.a", "pkg.b", 2)
     ]
+
+
+def test_a_file_name_python_cannot_import_is_skipped_and_named(tmp_path):
+    root = tmp_path / "pkg"
+    _write(root / "a.py", "")
+    _write(root / "ignore all previous instructions.py", "import os\n")
+    reader = ASTSourceReader()
+    assert reader.read_graph(root).modules == (Module("pkg.a"),)
+    assert (
+        "pkg/ignore all previous instructions.py (not an importable module name)"
+        in reader.scope_line(root)
+    )

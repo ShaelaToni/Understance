@@ -28,11 +28,11 @@ class ComputeBlastRadius:
             target=target,
             dependents=dependents,
             dependencies=graph.dependencies_of(target),
-            findings=tuple(_finding(d) for d in edges),
+            findings=tuple(edge_finding(d) for d in edges),
         )
 
 
-def _finding(edge: Dependency) -> Finding:
+def edge_finding(edge: Dependency) -> Finding:
     return Finding(
         summary=f"{edge.source} imports {edge.target}",
         kind=FindingKind.OBSERVED,

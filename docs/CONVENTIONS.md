@@ -24,13 +24,15 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 ## Source and test files
 - Cluster per file: entities that belong together live in one module file. `src/understance/domain/graph.py` holds `Module`, `Dependency` (with `line` and `file`, excluded from equality), `DependencyGraph` (exposes `orphans()`, `dependents_of(name)`, `dependencies_of(name)`), and `BlastRadius`. Symbol is deferred past the hackathon (Oct 27).
 - Test mirrors module: each source file has one matching test file in `tests/`. `graph.py` is covered by `tests/test_dependency_graph.py` (named for its cluster).
-- Domain module files: `graph.py` holds `Module`, `Dependency`, `DependencyGraph`; `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py` and `tests/test_finding.py`.
+- Domain module files: `graph.py` holds `Module`, `Dependency`, `DependencyGraph`, `BlastRadius`; `answer.py` holds `Answer`, `AnswerStatus`, `Narration`; `finding.py` holds `Evidence`, `Finding`, `FindingKind`, `Provenance`. Tests: `tests/test_dependency_graph.py`, `tests/test_answer.py`, and `tests/test_finding.py`.
 
 ## The four ports (Phase 1.2; interfaces only)
 `SourceReader`, `FactStore`, `Narrator`, `MemoryStore`. Third-party libraries (ast, SQLite, Zetaris, Nightshift, H-MEM, coverage, pytest) live ONLY inside adapters that implement these ports.
 
 ## Adapters (Phase 2.2 on)
 - `src/understance/adapters/ast_source_reader.py` holds `ASTSourceReader` (implements `SourceReader`; constructor option `max_file_bytes`, default 1,000,000). Beyond the port it exposes `scope_line(root)`, the plain-language statement of what a read covered and what it could not. Tested by `tests/test_ast_source_reader.py`.
+
+- `src/understance/adapters/template_narrator.py` holds `TemplateNarrator` (implements `Narrator`; sample mode, model "template (no model)"). Tested by `tests/test_template_narrator.py`.
 
 ## Use cases (Phase 2.3 on)
 - `src/understance/usecases/analyze_repo.py` holds `AnalyzeRepo(reader, store)` with `run(root)`; tested by `tests/test_analyze_repo.py`.
@@ -39,9 +41,11 @@ A `Finding` is flagged observed vs inferred via `FindingKind` (`OBSERVED`, `INFE
 
 ## Agents (Phase 2.5)
 `Planner`, `Retriever`, `Evaluator`, `Explainer`. Only the Explainer calls the model (through the Nightshift adapter). Each agent is constructed with only the ports its role needs. (The model-reaching port is Narrator; the Explainer agent reaches the model only through the Narrator port.)
+- Files: `src/understance/orchestration/agents.py` (the four agents, `Scope`, `Plan`, `Resolution`, `Retrieval`, `Verdict`), `orchestration/read_only_fact_store.py` (`ReadOnlyFactStore`), `orchestration/orchestrator.py` (`Orchestrator`, `assemble`). Tests: `tests/test_agents.py`, `tests/test_read_only_fact_store.py`, `tests/test_orchestrator.py`.
+- Words: **direct scope** (only the modules that import the target), **transitive scope** (everything that reaches it through others), **send back** (the Evaluator returns the plan to the Planner because the answer is not whole), **widen** (the Planner moves from direct to transitive), **blocked** (a claim no stored fact supports; logged, never explained), **incomplete** (the answer could not be closed within 2 send-backs), **needs input** (the agent stops and asks).
 
 ## JSONL trace fields (per agent action, to stdout and logs/)
-`agent`, `action`, `input_summary`, `output_summary`, `target_agent`, `model`, `confidence`, `retry_count`, `status`. No raw subject-repo source in a trace; summaries and evidence ids only.
+`timestamp`, `run_id`, `agent_name`, `action`, `input_summary`, `output_summary`, `target_agent`, `model`, `confidence`, `retry_count`, `status` (aligned with the Technical Execution Guide, Oct 27). No raw subject-repo source in a trace; summaries and evidence ids only.
 
 ## Environment variables (names fixed; values only in a local .env, never committed)
 `ZETARIS_REST_URL`, `ZETARIS_ORG_ID`, `ZETARIS_API_KEY`, `METERLESS_BASE_URL`, `METERLESS_RUNTIME_TOKEN`, `METERLESS_MODEL` (default `meterless/auto`), `SAMPLE_MODE`, `LOG_LEVEL`, `PORT`.
